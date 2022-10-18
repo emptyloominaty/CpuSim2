@@ -1,9 +1,11 @@
 public class Cpu {
 
     Memory memory;
+    Op opCodes;
 
-    public Cpu(Memory memory) {
+    public Cpu(Memory memory, Op opCodes) {
         this.memory = memory;
+        this.opCodes = opCodes;
     }
 
     int[] registers = new int[32];
@@ -39,12 +41,15 @@ public class Cpu {
     byte op = 0;
     byte bytes = 0;
     byte cycles = 0;
+    byte cyclesI = 0;
     byte bytesLeft = 0;
+    byte memThisCycleLeft = 3;
     int[] instructionCache = new int[6];
     byte instructionCacheIdx = 0;
     byte ramBus = 3; //bytes per clock
 
     public void main() {
+        memThisCycleLeft = 3;
         switch(cpuPhase) {
             //fetch opcode
             case 0:
@@ -56,7 +61,12 @@ public class Cpu {
                 break;
             //execute
             case 2:
-
+                if (cyclesI>0) {
+                    cyclesI--;
+                }
+                if (cyclesI<=0) {
+                    cpuPhase++;
+                }
                 break;
             //execute end
             case 3:
@@ -70,12 +80,15 @@ public class Cpu {
     public void fetchOpCode() {
         int val = loadByte();
         op = (byte) val;
-        //TODO: get bytes
-        //TODO: get cycles
+        bytes = opCodes.codes[val][0];
+        bytesLeft = (byte) (bytes-1);
+        cycles = opCodes.codes[val][1];
+        cyclesI = (byte) (cycles-1);
         instructionCacheIdx = 1;
+        memThisCycleLeft = 2;
         instructionCache[0] = val;
 
-        System.out.println("OP:"+val);
+        System.out.println("OP:"+val+" B:"+bytes+" C:"+cycles);
 
         programCounter ++;
         cpuPhase++;
@@ -85,14 +98,43 @@ public class Cpu {
     }
 
     public void fetchOtherBytes() {
-        int val = loadByte();
-        System.out.println("Val"+instructionCacheIdx+": "+val);
-        instructionCache[instructionCacheIdx] = val;
-        instructionCacheIdx++;
+        while (memThisCycleLeft>0 && bytesLeft>0) {
+            int val = loadByte();
+            memThisCycleLeft --;
+            System.out.println("Val"+instructionCacheIdx+": "+val);
+            instructionCache[instructionCacheIdx] = val;
+            instructionCacheIdx++;
+            programCounter ++;
+            bytesLeft--;
+        }
+        if (bytesLeft<=0) {
+            cpuPhase++;
+        }
     }
 
     public void execute() {
+        //TODO:
+        switch(op) {
+            case 1:
 
+                break;
+            case 2:
+
+                break;
+            case 3:
+
+                break;
+            case 4:
+
+                break;
+            case 5:
+
+                break;
+            case 6:
+                
+                break;
+        }
+        cpuPhase = 0;
     }
 
     public short loadByte() {

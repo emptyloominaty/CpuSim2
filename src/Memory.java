@@ -58,8 +58,8 @@ public class Memory {
 
 
         //test
-        store(4096, (short) 5);
-        store(4097, (short) 1);
+        store(4096, (short) 1);
+        store(4097, (short) 2);
 
         //System.out.println(load(0));
         //System.out.println(dataCanUse[65538]);
