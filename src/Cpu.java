@@ -44,23 +44,24 @@ public class Cpu {
     byte cyclesI = 0;
     byte bytesLeft = 0;
     byte memThisCycleLeft = 3;
-    int[] instructionCache = new int[6];
+    short[] instructionCache = new short[6];
     byte instructionCacheIdx = 0;
     byte ramBus = 3; //bytes per clock
 
     public void main() {
         memThisCycleLeft = 3;
         switch(cpuPhase) {
-            //fetch opcode
             case 0:
+                //fetch opcode
                 fetchOpCode();
                 break;
-            //fetch other bytes
+
             case 1:
+                //fetch other bytes
                 fetchOtherBytes();
                 break;
-            //execute
             case 2:
+                //execute
                 if (cyclesI>0) {
                     cyclesI--;
                 }
@@ -68,8 +69,8 @@ public class Cpu {
                     cpuPhase++;
                 }
                 break;
-            //execute end
             case 3:
+                //execute end
                 execute();
                 break;
 
@@ -78,7 +79,7 @@ public class Cpu {
     }
 
     public void fetchOpCode() {
-        int val = loadByte();
+        short val = loadByte();
         op = (byte) val;
         bytes = opCodes.codes[val][0];
         bytesLeft = (byte) (bytes-1);
@@ -88,7 +89,7 @@ public class Cpu {
         memThisCycleLeft = 2;
         instructionCache[0] = val;
 
-        System.out.println("OP:"+val+" B:"+bytes+" C:"+cycles);
+        System.out.print(val);
 
         programCounter ++;
         cpuPhase++;
@@ -99,15 +100,16 @@ public class Cpu {
 
     public void fetchOtherBytes() {
         while (memThisCycleLeft>0 && bytesLeft>0) {
-            int val = loadByte();
+            short val = loadByte();
             memThisCycleLeft --;
-            System.out.println("Val"+instructionCacheIdx+": "+val);
+            System.out.print(" "+val);
             instructionCache[instructionCacheIdx] = val;
             instructionCacheIdx++;
             programCounter ++;
             bytesLeft--;
         }
         if (bytesLeft<=0) {
+            System.out.println("");
             cpuPhase++;
         }
     }
@@ -115,23 +117,23 @@ public class Cpu {
     public void execute() {
         //TODO:
         switch(op) {
-            case 1:
-
+            case 1: //ADD  r1+r2=r3
+                registers[instructionCache[3]] = registers[instructionCache[1]] + registers[instructionCache[2]];
                 break;
-            case 2:
-
+            case 2: //SUB r1-r2=r3
+                registers[instructionCache[3]] = registers[instructionCache[1]] - registers[instructionCache[2]];
                 break;
-            case 3:
-
+            case 3: //LD1
+                registers[instructionCache[1]] = memory.load(Functions.convertTo24Bit(instructionCache[2],instructionCache[3],instructionCache[4]));
                 break;
-            case 4:
+            case 4: //ST1
 
                 break;
             case 5:
 
                 break;
             case 6:
-                
+
                 break;
         }
         cpuPhase = 0;
@@ -142,7 +144,7 @@ public class Cpu {
     }
 
     public void stopCpu() {
-        System.out.println("Cpu Stopped");
+        System.out.println("\nCpu Stopped");
         running = false;
     }
 

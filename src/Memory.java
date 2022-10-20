@@ -58,8 +58,31 @@ public class Memory {
 
 
         //test
-        store(4096, (short) 1);
-        store(4097, (short) 2);
+        store(4096, (short) 3);
+        store(4097, (short) 0); //reg
+        store(4098, (short) 0); //hi
+        store(4099, (short) 23); //med
+        store(4100, (short) 112); //low
+
+        store(4101, (short) 3);
+        store(4102, (short) 1); //reg
+        store(4103, (short) 0); //hi
+        store(4104, (short) 23); //med
+        store(4105, (short) 113); //low
+
+        store(4106, (short) 1);
+        store(4107, (short) 0); //reg a
+        store(4108, (short) 1); //reg b
+        store(4109, (short) 2); //reg c
+
+        store(4110, (short) 4);
+        store(4111, (short) 2); //reg
+        store(4112, (short) 0); //hi
+        store(4113, (short) 23); //med
+        store(4114, (short) 114); //low
+
+        store(6000, (short) 2);
+        store(6001, (short) 4);
 
         //System.out.println(load(0));
         //System.out.println(dataCanUse[65538]);
