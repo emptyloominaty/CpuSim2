@@ -44,8 +44,8 @@ public class Cpu {
     byte cyclesI = 0;
     byte bytesLeft = 0;
     byte memThisCycleLeft = 3;
-    short[] instructionCache = new short[6];
-    byte instructionCacheIdx = 0;
+    short[] instructionData = new short[6];
+    byte instructionDataIdx = 0;
     byte ramBus = 3; //bytes per clock
 
     public void main() {
@@ -66,12 +66,8 @@ public class Cpu {
                     cyclesI--;
                 }
                 if (cyclesI<=0) {
-                    cpuPhase++;
+                    execute();
                 }
-                break;
-            case 3:
-                //execute end
-                execute();
                 break;
 
         }
@@ -85,9 +81,9 @@ public class Cpu {
         bytesLeft = (byte) (bytes-1);
         cycles = opCodes.codes[val][1];
         cyclesI = (byte) (cycles-1);
-        instructionCacheIdx = 1;
+        instructionDataIdx = 1;
         memThisCycleLeft = 2;
-        instructionCache[0] = val;
+        instructionData[0] = val;
 
         System.out.print(val);
 
@@ -103,11 +99,12 @@ public class Cpu {
             short val = loadByte();
             memThisCycleLeft --;
             System.out.print(" "+val);
-            instructionCache[instructionCacheIdx] = val;
-            instructionCacheIdx++;
+            instructionData[instructionDataIdx] = val;
+            instructionDataIdx++;
             programCounter ++;
             bytesLeft--;
         }
+        cyclesI--;
         if (bytesLeft<=0) {
             System.out.println("");
             cpuPhase++;
@@ -115,19 +112,22 @@ public class Cpu {
     }
 
     public void execute() {
+        int val = 0;
         //TODO:
         switch(op) {
             case 1: //ADD  r1+r2=r3
-                registers[instructionCache[3]] = registers[instructionCache[1]] + registers[instructionCache[2]];
+                val = registers[instructionData[1]] + registers[instructionData[2]];
+                registers[instructionData[3]] = val;
                 break;
             case 2: //SUB r1-r2=r3
-                registers[instructionCache[3]] = registers[instructionCache[1]] - registers[instructionCache[2]];
+                val = registers[instructionData[1]] - registers[instructionData[2]];
+                registers[instructionData[3]] = val;
                 break;
             case 3: //LD1
-                registers[instructionCache[1]] = memory.load(Functions.convertTo24Bit(instructionCache[2],instructionCache[3],instructionCache[4]));
+                registers[instructionData[1]] = memory.load(Functions.convertTo24Bit(instructionData[2],instructionData[3],instructionData[4]));
                 break;
             case 4: //ST1
-
+                memory.store(Functions.convertTo24Bit(instructionData[2],instructionData[3],instructionData[4]), (short) registers[instructionData[1]]);
                 break;
             case 5:
 
@@ -136,6 +136,7 @@ public class Cpu {
 
                 break;
         }
+        setFlags(val);
         cpuPhase = 0;
     }
 
@@ -155,15 +156,19 @@ public class Cpu {
         flagOverflow = false;
         if (val==0) {
             flagZero = true;
+            System.out.println("ZERO");
         }
         if (val<0) {
             flagSign = true;
+            System.out.println("SIGN");
         }
         if (val>16777215) {
             flagCarry = true;
+            System.out.println("CARRY");
         }
         if (val>33554431) {
             flagOverflow = true;
+            System.out.println("OVERFLOW");
         }
     }
 

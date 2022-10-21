@@ -3,6 +3,7 @@ import static java.lang.Runtime.getRuntime;
 public class Memory {
     short[] data = new short[16777216]; //16777216
     boolean[] dataCanUse = new boolean[16777216]; //16777216
+    boolean[] dataCanStore = new boolean[16777216]; //16777216
 
     public void init() {
         //memory config
@@ -26,34 +27,40 @@ public class Memory {
         int ioStart = 16711680;
         int ioEnd = 16711807;
 
-
         //main ram 0-65535
         for (int i = 0; i <= ramEnd; i++) {
             dataCanUse[i] = true;
+            dataCanStore[i] = true;
         }
         //extended ram 65536 - 4259839
         for (int i = extendedRamStart; i <= extendedRamEnd; i++) {
             dataCanUse[i] = true;
+            dataCanStore[i] = true;
         }
         //vram 10485760 - 11010047
         for (int i = vramStart; i <= vramEnd; i++) {
             dataCanUse[i] = true;
+            dataCanStore[i] = true;
         }
         //rom 11534336 - 12582911
         for (int i = romStart; i <= romEnd; i++) {
             dataCanUse[i] = true;
+            dataCanStore[i] = false;
         }
         //user removable storage 12582912 - 13631487
         for (int i = ursStart; i <= ursEnd; i++) {
             dataCanUse[i] = true;
+            dataCanStore[i] = true;
         }
         //char rom 13631488 - 13633535
         for (int i = charRomStart; i <= charRomEnd; i++) {
             dataCanUse[i] = true;
+            dataCanStore[i] = false;
         }
         //I/O 16711680 - 16711807
         for (int i = ioStart; i <= ioEnd; i++) {
             dataCanUse[i] = true;
+            dataCanStore[i] = true;
         }
 
 
@@ -81,8 +88,8 @@ public class Memory {
         store(4113, (short) 23); //med
         store(4114, (short) 114); //low
 
-        store(6000, (short) 2);
-        store(6001, (short) 4);
+        store(6000, (short) 10);
+        store(6001, (short) 10);
 
         //System.out.println(load(0));
         //System.out.println(dataCanUse[65538]);
@@ -97,7 +104,10 @@ public class Memory {
     }
 
     public void store(int address, short value) {
-        if (dataCanUse[address]) {
+        if (value>255) {
+            value=255;
+        }
+        if (dataCanUse[address] && dataCanStore[address]) {
             data[address] = value;
         }
     }
