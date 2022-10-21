@@ -91,8 +91,8 @@ public class Op {
         codes[78] = new byte[]{2, 3}; //NOT
         codes[79] = new byte[]{1, 1}; //
 
-        codes[80] = new byte[]{1, 1}; //
-        codes[81] = new byte[]{1, 1}; //
+        codes[80] = new byte[]{2, 3}; //CBT8 //byte(r0) to 8 bits (r0-r7)
+        codes[81] = new byte[]{2, 3}; //C8TB //8 bits (r0-r7) to byte(r0)
         codes[82] = new byte[]{1, 1}; //
         codes[83] = new byte[]{1, 1}; //
         codes[84] = new byte[]{1, 1}; //
