@@ -37,8 +37,8 @@ public class Op {
         codes[29] = new byte[]{4, 4}; //JC (Carry)
 
         codes[30] = new byte[]{4, 4}; //JNC (Not Carry)
-        codes[31] = new byte[]{2, 3}; //PSH
-        codes[32] = new byte[]{2, 3}; //POP
+        codes[31] = new byte[]{3, 3}; //PSH1  //TODO
+        codes[32] = new byte[]{3, 3}; //POP1  //TODO
         codes[33] = new byte[]{3, 4}; //TRR (Register to Register)
         codes[34] = new byte[]{2, 4}; //TRP (Register to Program Counter)
         codes[35] = new byte[]{2, 4}; //TPR (Program Counter to Register)
@@ -63,10 +63,10 @@ public class Op {
         codes[52] = new byte[]{1, 2}; //SDI (Disable Interrupts)
         codes[53] = new byte[]{2, 5}; //INT (Software Interrupt) (sp,pc,fl)
         codes[54] = new byte[]{1, 5}; //RFI
-        codes[55] = new byte[]{1, 1}; //
-        codes[56] = new byte[]{1, 1}; //
-        codes[57] = new byte[]{1, 1}; //
-        codes[58] = new byte[]{1, 1}; //
+        codes[55] = new byte[]{1, 1}; //PSH2 //TODO
+        codes[56] = new byte[]{1, 1}; //POP2 //TODO
+        codes[57] = new byte[]{1, 1}; //PSH3 //TODO
+        codes[58] = new byte[]{1, 1}; //POP3 //TODO
         codes[59] = new byte[]{1, 1}; //
 
         codes[60] = new byte[]{3, 4}; //LDR1 (Load from Address stored in Register) 8bit

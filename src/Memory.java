@@ -111,6 +111,104 @@ public class Memory {
         store(4132, (short) 23); //med
         store(4133, (short) 118); //low
 
+        store(4134, (short) 21);
+        store(4135, (short) 0);
+        store(4136, (short) 19);
+        store(4137, (short) 136);
+
+        store(5000, (short) 1);
+        store(5001, (short) 0);
+        store(5002, (short) 2);
+        store(5003, (short) 3);
+
+        store(5004, (short) 22);
+
+        store(4138, (short) 33);
+        store(4139, (short) 3);
+        store(4140, (short) 20);
+
+        store(4141, (short) 31);
+        store(4142, (short) 20);
+        store(4143, (short) 1);
+
+        store(4144, (short) 31);
+        store(4145, (short) 20);
+        store(4146, (short) 1);
+
+        store(4147, (short) 31);
+        store(4148, (short) 20);
+        store(4149, (short) 1);
+
+        store(4150, (short) 31);
+        store(4151, (short) 20);
+        store(4152, (short) 2);
+
+        store(4153, (short) 31);
+        store(4154, (short) 20);
+        store(4155, (short) 3);
+
+        store(4156, (short) 31);
+        store(4157, (short) 20);
+        store(4158, (short) 1);
+
+        store(4159, (short) 32);
+        store(4160, (short) 21);
+        store(4161, (short) 1);
+
+        store(4162, (short) 32);
+        store(4163, (short) 22);
+        store(4164, (short) 3);
+
+        store(4165, (short) 32);
+        store(4166, (short) 23);
+        store(4167, (short) 2);
+
+        store(4168, (short) 32);
+        store(4169, (short) 24);
+        store(4170, (short) 1);
+
+        store(4171, (short) 27);
+        store(4172, (short) 22);
+        store(4173, (short) 23);
+        store(4174, (short) 0);
+        store(4175, (short) 19);
+        store(4176, (short) 141);
+
+        store(5005, (short) 1);
+        store(5006, (short) 22);
+        store(5007, (short) 23);
+        store(5008, (short) 25);
+
+        store(5009, (short) 11);
+        store(5010, (short) 26);
+        store(5011, (short) 0); //255
+        store(5012, (short) 0); //255
+        store(5013, (short) 35); //0
+
+        store(5014, (short) 1);
+        store(5015, (short) 22);
+        store(5016, (short) 23);
+        store(5017, (short) 23);
+
+        store(5018, (short) 10);
+        store(5019, (short) 27);
+        store(5020, (short) 0);
+        store(5021, (short) 28);
+
+        store(5022, (short) 2);
+        store(5023, (short) 23);
+        store(5024, (short) 27);
+        store(5025, (short) 23);
+
+        store(5026, (short) 24);
+        store(5027, (short) 23);
+        store(5028, (short) 26);
+        store(5029, (short) 0);
+        store(5030, (short) 19);
+        store(5031, (short) 150);
+
+
+
         store(6000, (short) 10);
         store(6001, (short) 10);
 

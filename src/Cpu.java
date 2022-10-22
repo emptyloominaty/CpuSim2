@@ -35,6 +35,8 @@ public class Cpu {
     }
 
     boolean running = true;
+    long cyclesDone = 0;
+    long instructionsDone = 0;
     int programCounterMax = 4259839;
     short stackPointerMax = 4095;
     byte cpuPhase = 0;
@@ -46,9 +48,12 @@ public class Cpu {
     byte memThisCycleLeft = 3;
     short[] instructionData = new short[6];
     byte instructionDataIdx = 0;
-    byte ramBus = 3; //bytes per clock
 
     public void main() {
+        if (!running) {
+            return;
+        }
+        cyclesDone++;
         memThisCycleLeft = 3;
         switch(cpuPhase) {
             case 0:
@@ -69,7 +74,6 @@ public class Cpu {
                     execute();
                 }
                 break;
-
         }
 
     }
@@ -85,7 +89,7 @@ public class Cpu {
         memThisCycleLeft = 2;
         instructionData[0] = val;
 
-        System.out.print(val);
+        System.out.print(programCounter+": "+val);
 
         programCounter ++;
         cpuPhase++;
@@ -118,14 +122,29 @@ public class Cpu {
     }
 
     public void execute() {
-        int val = 1;
+        instructionsDone++;
+        short[] store;
+        short[] bytes;
+        int load;
+        int val;
+        short byte1;
+        short byte2;
+        short byte3;
+        int address1;
+        int address2;
+        int address3;
         switch(op) {
             case 1: //ADD  r1+r2=r3
                 val = registers[instructionData[1]] + registers[instructionData[2]];
+                setFlags(val);
+                if (flagCarry) {
+                    val -= 16777216;
+                }
                 registers[instructionData[3]] = val;
                 break;
             case 2: //SUB r1-r2=r3
                 val = registers[instructionData[1]] - registers[instructionData[2]];
+                setFlags(val);
                 registers[instructionData[3]] = val;
                 break;
             case 3: //LD1
@@ -135,95 +154,175 @@ public class Cpu {
                 memory.store(Functions.convertTo24Bit(instructionData[2],instructionData[3],instructionData[4]), (short) registers[instructionData[1]]);
                 break;
             case 5: //LD2
-                int load =  Functions.convertTo16Bit(memory.load(Functions.convertTo24Bit(instructionData[2],instructionData[3],instructionData[4])),
-                    memory.load(Functions.convertTo24Bit(instructionData[2],instructionData[3], (short) (instructionData[4]+1))));
+                load =  Functions.convertTo16Bit(memory.load(Functions.convertTo24Bit(instructionData[2],instructionData[3],instructionData[4])),
+                    memory.load(Functions.convertTo24Bit(instructionData[2],instructionData[3], instructionData[4])+1));
                 registers[instructionData[1]] = load;
-                System.out.println("r"+instructionData[1]+": "+registers[instructionData[1]]);
                 break;
             case 6: //ST2
-                short[] store = Functions.convertFrom16Bit(registers[instructionData[1]]);
+                store = Functions.convertFrom16Bit(registers[instructionData[1]]);
                 memory.store(Functions.convertTo24Bit(instructionData[2],instructionData[3],instructionData[4]),store[0]);
-                memory.store(Functions.convertTo24Bit(instructionData[2],instructionData[3], (short) (instructionData[4]+1)),store[1]);
+                memory.store(Functions.convertTo24Bit(instructionData[2],instructionData[3], instructionData[4])+1,store[1]);
                 break;
             case 7: //LD3
-
+                byte1 = memory.load(Functions.convertTo24Bit(instructionData[2],instructionData[3],instructionData[4]));
+                byte2 = memory.load(Functions.convertTo24Bit(instructionData[2],instructionData[3],(instructionData[4]))+1);
+                byte3 = memory.load(Functions.convertTo24Bit(instructionData[2],instructionData[3],(instructionData[4]))+2);
+                load = Functions.convertTo24Bit(byte1,byte2,byte3);
+                registers[instructionData[1]] = load;
                 break;
             case 8: //ST3
-
+                address1 = Functions.convertTo24Bit(instructionData[2],instructionData[3],instructionData[4]);
+                address2 = Functions.convertTo24Bit(instructionData[2],instructionData[3],instructionData[4])+1;
+                address3 = Functions.convertTo24Bit(instructionData[2],instructionData[3],instructionData[4])+2;
+                store = Functions.convertFrom24Bit(registers[instructionData[1]]);
+                memory.store(address1,store[0]);
+                memory.store(address2,store[1]);
+                memory.store(address3,store[2]);
                 break;
             case 9: //LDI1
-
+                registers[instructionData[1]] = instructionData[2];
                 break;
             case 10: //LDI2
-
+                registers[instructionData[1]] = Functions.convertTo16Bit(instructionData[2],instructionData[3]);
                 break;
             case 11: //LDI3
-
+                registers[instructionData[1]] = Functions.convertTo24Bit(instructionData[2],instructionData[3],instructionData[4]);
                 break;
             case 12: //INC
-
+                registers[instructionData[1]]++;
+                setFlags(registers[instructionData[1]]);
                 break;
             case 13: //DEC
-
+                registers[instructionData[1]]--;
+                setFlags(registers[instructionData[1]]);
                 break;
             case 14: //MUL
-
+                val = registers[instructionData[1]] * registers[instructionData[2]];
+                setFlags(val);
+                if (flagCarry) {
+                    val -= 16777216;
+                }
+                registers[instructionData[3]] = val;
                 break;
             case 15: //DIV
-
+                val = registers[instructionData[1]] / registers[instructionData[2]];
+                setFlags(val);
+                registers[instructionData[3]] = val;
                 break;
             case 16: //DIVR
-
+                val = registers[instructionData[1]] % registers[instructionData[2]];
+                setFlags(val);
+                registers[instructionData[3]] = val;
                 break;
             case 17: //ADC
-
+                val = registers[instructionData[1]] + registers[instructionData[2]];
+                if (flagCarry) {
+                    val ++;
+                }
+                setFlags(val);
+                if (flagCarry) {
+                    val -= 16777216;
+                }
+                registers[instructionData[3]] = val;
                 break;
             case 18: //SUC
-
+                //TODO:
                 break;
             case 19: //NOP
                 break;
             case 20: //JMP
-
+                programCounter = Functions.convertTo24Bit(instructionData[1],instructionData[2],instructionData[3]);
                 break;
             case 21: //JSR
-
+                bytes = Functions.convertFrom24Bit(programCounter);
+                memory.store(stackPointer,bytes[0]);
+                stackPointer++;
+                memory.store(stackPointer,bytes[1]);
+                stackPointer++;
+                memory.store(stackPointer,bytes[2]);
+                stackPointer++;
+                programCounter = Functions.convertTo24Bit(instructionData[1],instructionData[2],instructionData[3]);
                 break;
             case 22: //RFS
-
+                stackPointer--;
+                byte3 = memory.load(stackPointer);
+                stackPointer--;
+                byte2 = memory.load(stackPointer);
+                stackPointer--;
+                byte1 = memory.load(stackPointer);
+                programCounter = Functions.convertTo24Bit(byte1,byte2,byte3);
                 break;
             case 23: //JG
-
+                if (registers[instructionData[1]]>registers[instructionData[2]]) {
+                    programCounter = Functions.convertTo24Bit(instructionData[3],instructionData[4],instructionData[5]);
+                }
                 break;
             case 24: //JL
-
+                if (registers[instructionData[1]]<registers[instructionData[2]]) {
+                    programCounter = Functions.convertTo24Bit(instructionData[3],instructionData[4],instructionData[5]);
+                }
                 break;
             case 25: //JNG
-
+                if (!(registers[instructionData[1]]>registers[instructionData[2]])) {
+                    programCounter = Functions.convertTo24Bit(instructionData[3],instructionData[4],instructionData[5]);
+                }
                 break;
             case 26: //JNL
-
+                if (!(registers[instructionData[1]]<registers[instructionData[2]])) {
+                    programCounter = Functions.convertTo24Bit(instructionData[3],instructionData[4],instructionData[5]);
+                }
                 break;
             case 27: //JE
-
+                if (registers[instructionData[1]]==registers[instructionData[2]]) {
+                    programCounter = Functions.convertTo24Bit(instructionData[3],instructionData[4],instructionData[5]);
+                }
                 break;
             case 28: //JNE
-
+                if (!(registers[instructionData[1]]==registers[instructionData[2]])) {
+                    programCounter = Functions.convertTo24Bit(instructionData[3],instructionData[4],instructionData[5]);
+                }
                 break;
             case 29: //JC
-
+                if (flagCarry) {
+                    programCounter = Functions.convertTo24Bit(instructionData[3],instructionData[4],instructionData[5]);
+                    flagCarry = false;
+                }
                 break;
             case 30: //JNC
-
+                if (!(flagCarry)) {
+                    programCounter = Functions.convertTo24Bit(instructionData[3],instructionData[4],instructionData[5]);
+                }
                 break;
             case 31: //PSH
-
+                bytes = Functions.convertFrom24Bit(registers[instructionData[1]]);
+                if (instructionData[2]>2) {
+                    memory.store(stackPointer,bytes[0]);
+                    stackPointer++;
+                }
+                if (instructionData[2]>1) {
+                    memory.store(stackPointer,bytes[1]);
+                    stackPointer++;
+                }
+                memory.store(stackPointer,bytes[2]);
+                stackPointer++;
                 break;
             case 32: //POP
-
+                byte1 = 0;
+                byte2 = 0;
+                stackPointer--;
+                byte3 = memory.load(stackPointer);
+                if (instructionData[2]>1) {
+                    stackPointer--;
+                    byte2 = memory.load(stackPointer);
+                }
+                if (instructionData[2]>2) {
+                    stackPointer--;
+                    byte1 = memory.load(stackPointer);
+                }
+                registers[instructionData[1]] = Functions.convertTo24Bit(byte1,byte2,byte3);
                 break;
             case 33: //TRR
-
+                registers[instructionData[2]] = registers[instructionData[1]];
                 break;
             case 34: //TRP
 
@@ -394,7 +493,6 @@ public class Cpu {
 
                 break;
         }
-        setFlags(val);
         cpuPhase = 0;
     }
 
