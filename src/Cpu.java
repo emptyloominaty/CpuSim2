@@ -37,8 +37,8 @@ public class Cpu {
     boolean running = true;
     long cyclesDone = 0;
     long instructionsDone = 0;
-    int programCounterMax = 4259839;
-    short stackPointerMax = 4095;
+    //int programCounterMax = 4259839;
+    //short stackPointerMax = 4095;
     byte cpuPhase = 0;
     byte op = 0;
     byte bytes = 0;
@@ -319,11 +319,7 @@ public class Cpu {
                 registers[instructionData[1]] = stackPointer;
                 break;
             case 38: //TCR
-                if (registers[instructionData[1]]==1) {
-                    flagCarry = true;
-                } else {
-                    flagCarry = false;
-                }
+                flagCarry = registers[instructionData[1]] == 1;
                 break;
             case 39: //TRC
                 if (flagCarry) {
@@ -537,40 +533,91 @@ public class Cpu {
 
                 break;
             case 70: //ROL
-
+                //TODO:
                 break;
             case 71: //ROR
-
+                //TODO:
                 break;
             case 72: //SLL
-
+                val = registers[instructionData[1]] << 1;
+                setFlags(val);
+                if (flagCarry) {
+                    val -= 16777216;
+                }
+                registers[instructionData[1]] = val;
                 break;
             case 73: //SLR
-
+                val = registers[instructionData[1]] >>> 1;
+                setFlags(val);
+                if (flagCarry) {
+                    val -= 16777216;
+                }
+                registers[instructionData[1]] = val;
                 break;
             case 74: //SRR
-
+                val = registers[instructionData[1]] >> 1;
+                setFlags(val);
+                if (flagCarry) {
+                    val -= 16777216;
+                }
+                registers[instructionData[1]] = val;
                 break;
             case 75: //AND
-
+                val = registers[instructionData[1]] & registers[instructionData[2]];
+                setFlags(val);
+                if (flagCarry) {
+                    val -= 16777216;
+                }
+                registers[instructionData[3]] = val;
                 break;
             case 76: //OR
-
+                val = registers[instructionData[1]] | registers[instructionData[2]];
+                setFlags(val);
+                if (flagCarry) {
+                    val -= 16777216;
+                }
+                registers[instructionData[3]] = val;
                 break;
             case 77: //XOR
-
+                val = registers[instructionData[1]] ^ registers[instructionData[2]];
+                setFlags(val);
+                if (flagCarry) {
+                    val -= 16777216;
+                }
+                registers[instructionData[3]] = val;
                 break;
             case 78: //NOT
-
+                val = ~registers[instructionData[1]];
+                setFlags(val);
+                if (flagCarry) {
+                    val -= 16777216;
+                }
+                registers[instructionData[1]] = val;
                 break;
             case 79: //
 
                 break;
             case 80: //CBT8
-
+                val = registers[instructionData[1]];
+                registers[instructionData[1]] = val & 0x01;
+                registers[instructionData[1]+1] = (val >> 1) & 0x01;
+                registers[instructionData[1]+2] = (val >> 2) & 0x01;
+                registers[instructionData[1]+3] = (val >> 3) & 0x01;
+                registers[instructionData[1]+4] = (val >> 4) & 0x01;
+                registers[instructionData[1]+5] = (val >> 5) & 0x01;
+                registers[instructionData[1]+6] = (val >> 6) & 0x01;
+                registers[instructionData[1]+7] = (val >> 7) & 0x01;
                 break;
             case 81: //C8TB
-
+                val = registers[instructionData[1]];
+                val |= registers[instructionData[1]+1] << 1;
+                val |= registers[instructionData[1]+2] << 2;
+                val |= registers[instructionData[1]+3] << 3;
+                val |= registers[instructionData[1]+4] << 4;
+                val |= registers[instructionData[1]+5] << 5;
+                val |= registers[instructionData[1]+6] << 6;
+                val |= registers[instructionData[1]+7] << 7;
+                registers[instructionData[1]] = val;
                 break;
             case 82: //
 

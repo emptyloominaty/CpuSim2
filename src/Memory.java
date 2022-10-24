@@ -197,7 +197,19 @@ public class Memory {
         store(5030, (short) 19);
         store(5031, (short) 150);
 
+        store(5032, (short) 9);
+        store(5033, (short) 28);
+        store(5034, (short) 1);
 
+        store(5035, (short) 9);
+        store(5036, (short) 10);
+        store(5037, (short) 24);
+
+        store(5038, (short) 80);
+        store(5039, (short) 10);
+
+        store(5040, (short) 81);
+        store(5041, (short) 10);
 
         store(6000, (short) 10);
         store(6001, (short) 10);
