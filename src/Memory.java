@@ -129,50 +129,40 @@ public class Memory {
 
         store(4141, (short) 31);
         store(4142, (short) 20);
-        store(4143, (short) 1);
 
-        store(4144, (short) 31);
-        store(4145, (short) 20);
-        store(4146, (short) 1);
+        store(4143, (short) 31);
+        store(4144, (short) 20);
 
-        store(4147, (short) 31);
+        store(4145, (short) 31);
+        store(4146, (short) 20);
+
+        store(4147, (short) 55);
         store(4148, (short) 20);
-        store(4149, (short) 1);
 
-        store(4150, (short) 31);
-        store(4151, (short) 20);
-        store(4152, (short) 2);
+        store(4149, (short) 57);
+        store(4150, (short) 20);
 
-        store(4153, (short) 31);
-        store(4154, (short) 20);
-        store(4155, (short) 3);
+        store(4151, (short) 31);
+        store(4152, (short) 20);
 
-        store(4156, (short) 31);
-        store(4157, (short) 20);
-        store(4158, (short) 1);
+        store(4153, (short) 32);
+        store(4154, (short) 21);
+
+        store(4155, (short) 58);
+        store(4156, (short) 22);
+
+        store(4157, (short) 56);
+        store(4158, (short) 23);
 
         store(4159, (short) 32);
-        store(4160, (short) 21);
-        store(4161, (short) 1);
+        store(4160, (short) 24);
 
-        store(4162, (short) 32);
-        store(4163, (short) 22);
-        store(4164, (short) 3);
-
-        store(4165, (short) 32);
-        store(4166, (short) 23);
-        store(4167, (short) 2);
-
-        store(4168, (short) 32);
-        store(4169, (short) 24);
-        store(4170, (short) 1);
-
-        store(4171, (short) 27);
-        store(4172, (short) 22);
-        store(4173, (short) 23);
-        store(4174, (short) 0);
-        store(4175, (short) 19);
-        store(4176, (short) 141);
+        store(4161, (short) 27);
+        store(4162, (short) 22);
+        store(4163, (short) 23);
+        store(4164, (short) 0);
+        store(4165, (short) 19);
+        store(4166, (short) 141);
 
         store(5005, (short) 1);
         store(5006, (short) 22);
