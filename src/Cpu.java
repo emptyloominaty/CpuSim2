@@ -1,4 +1,5 @@
 public class Cpu {
+    boolean debug = false;
 
     Memory memory;
     Op opCodes;
@@ -89,7 +90,7 @@ public class Cpu {
         memThisCycleLeft = 2;
         instructionData[0] = val;
 
-        System.out.print(programCounter+": "+val);
+        debugPrint(programCounter+": "+val,false);
 
         programCounter ++;
         cpuPhase++;
@@ -105,7 +106,7 @@ public class Cpu {
         while (memThisCycleLeft>0 && bytesLeft>0) {
             short val = loadByte();
             memThisCycleLeft --;
-            System.out.print(" "+val);
+            debugPrint(" "+val,false);
             instructionData[instructionDataIdx] = val;
             instructionDataIdx++;
             programCounter ++;
@@ -113,13 +114,24 @@ public class Cpu {
         }
         cyclesI--;
         if (bytesLeft<=0) {
-            System.out.println("");
+            debugPrint("",true);
             cpuPhase++;
         }
         if (cyclesI == 0) {
             execute();
         }
     }
+
+    public void debugPrint(String text, boolean newLine) {
+        if (debug) {
+            if (newLine) {
+                System.out.println(text);
+            } else {
+                System.out.print(text);
+            }
+        }
+    }
+
 
     public void execute() {
         instructionsDone++;
@@ -652,7 +664,7 @@ public class Cpu {
     }
 
     public void stopCpu() {
-        System.out.println("\nCpu Stopped");
+        debugPrint("\nCpu Stopped",true);
         running = false;
     }
 
@@ -663,19 +675,19 @@ public class Cpu {
         flagOverflow = false;
         if (val==0) {
             flagZero = true;
-            System.out.println("ZERO");
+            debugPrint("ZERO",true);
         }
         if (val<0) {
             flagSign = true;
-            System.out.println("SIGN");
+            debugPrint("SIGN",true);
         }
         if (val>16777215) {
             flagCarry = true;
-            System.out.println("CARRY");
+            debugPrint("CARRY",true);
         }
         if (val>33554431) {
             flagOverflow = true;
-            System.out.println("OVERFLOW");
+            debugPrint("OVERFLOW",true);
         }
     }
 

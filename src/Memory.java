@@ -171,7 +171,7 @@ public class Memory {
 
         store(5009, (short) 11);
         store(5010, (short) 26);
-        store(5011, (short) 0); //255
+        store(5011, (short) 255); //255
         store(5012, (short) 0); //255
         store(5013, (short) 35); //0
 

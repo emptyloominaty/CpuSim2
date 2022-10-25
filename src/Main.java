@@ -10,10 +10,23 @@ public class Main {
         Cpu cpu = new Cpu(memory,opCodes);
         cpu.init();
 
+        Frame frame = new Frame();
+        frame.main(cpu,memory);
+
+        int updateFrameA = 0;
+        int updateFrameB = 1000000;
+
         long startTime = System.currentTimeMillis();
         int test = 0;
         while (cpu.running && test<1800000000) {
             cpu.main();
+
+            updateFrameA++;
+            if (updateFrameB<updateFrameA) {
+                updateFrameA = 0;
+                frame.update(cpu); //TODO:16ms
+            }
+
             test ++;
         }
         //System.out.println(memory.load(6002));
@@ -21,6 +34,7 @@ public class Main {
         System.out.println(stopTime - startTime+"ms");
 
 
+        System.out.println("Clock: "+(cpu.cyclesDone/((stopTime - startTime)))/1000+" MHZ");
 
         System.out.println("Cycles: "+cpu.cyclesDone);
         System.out.println("Instructions: "+cpu.instructionsDone);
@@ -66,9 +80,15 @@ public class Main {
         System.out.print("Stack: ");
         //STACK
         int a = 0;
-        while (a<100) {
+        int l = 0;
+        while (a<32) {
             System.out.print(memory.data[a]+" ");
             a++;
+            l++;
+            if (l>63) {
+                l = 0;
+                System.out.println();
+            }
         }
 
         //TEST
