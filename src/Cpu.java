@@ -1,5 +1,9 @@
-public class Cpu {
+public class Cpu{
     boolean debug = false;
+    int clock = 0;
+    long timeA = System.currentTimeMillis();
+    long timeB = System.currentTimeMillis();
+    long cyclesDoneB = 0;
 
     Memory memory;
     Op opCodes;
@@ -50,12 +54,26 @@ public class Cpu {
     short[] instructionData = new short[6];
     byte instructionDataIdx = 0;
 
-    public void main() {
+    public void run() {
         if (!running) {
             return;
-        }
+        };
         cyclesDone++;
         memThisCycleLeft = 3;
+
+
+        timeA = System.currentTimeMillis();
+        if (timeA-timeB>1000) {
+            clock = (int) (cyclesDone-cyclesDoneB);
+
+            timeB = System.currentTimeMillis();
+            cyclesDoneB = cyclesDone;
+        }
+
+
+
+
+
         switch(cpuPhase) {
             case 0:
                 //fetch opcode

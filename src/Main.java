@@ -17,24 +17,23 @@ public class Main {
         int updateFrameB = 1000000;
 
         long startTime = System.currentTimeMillis();
-        int test = 0;
-        while (cpu.running && test<1800000000) {
-            cpu.main();
-
+        long test = 0;
+        while (cpu.running && test<18000000000000L) {
+            cpu.run();
             updateFrameA++;
             if (updateFrameB<updateFrameA) {
                 updateFrameA = 0;
                 frame.update(cpu); //TODO:16ms
             }
-
             test ++;
         }
+        frame.update(cpu);
         //System.out.println(memory.load(6002));
         long stopTime = System.currentTimeMillis();
         System.out.println(stopTime - startTime+"ms");
 
 
-        System.out.println("Clock: "+(cpu.cyclesDone/((stopTime - startTime)))/1000+" MHZ");
+        System.out.println("Avg Clock: "+(cpu.cyclesDone/((stopTime - startTime)))/1000+" MHZ");
 
         System.out.println("Cycles: "+cpu.cyclesDone);
         System.out.println("Instructions: "+cpu.instructionsDone);
@@ -96,8 +95,8 @@ public class Main {
         System.out.println(Functions.convertTo24Bit((short) 0, (short) 1, (short) 0));
         System.out.println(Functions.convertTo24Bit((short) 1, (short) 0, (short) 0));
         System.out.println(Functions.convertTo24Bit((short) 255, (short) 255, (short) 255));*/
-        //short[] arrayTest = Functions.convertFrom24Bit(5013);
-        //System.out.println(arrayTest[0]+"-"+arrayTest[1]+"-"+arrayTest[2]);
+        short[] arrayTest = Functions.convertFrom24Bit(5047);
+        System.out.println(arrayTest[0]+"-"+arrayTest[1]+"-"+arrayTest[2]);
 
     }
 }
