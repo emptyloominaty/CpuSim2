@@ -1,15 +1,53 @@
-public class Cpu{
+public class Cpu extends Thread {
     boolean debug = false;
     int clock = 0;
     long timeA = System.currentTimeMillis();
     long timeB = System.currentTimeMillis();
+    long timeC = System.currentTimeMillis();
     long cyclesDoneB = 0;
 
-    Memory memory;
-    Op opCodes;
+    boolean threadRunning = true;
 
-    public Cpu(Memory memory, Op opCodes) {
-        this.memory = memory;
+    Op opCodes;
+    Frame frame;
+
+    public void run() {
+        while(threadRunning) {
+            while(running) {
+                this.main();
+            }
+            try {
+                sleep(250);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public void resetCpu() {
+        init();
+        cyclesDone = 0;
+        instructionsDone = 0;
+        cpuPhase = 0;
+        op = 0;
+        bytes = 0;
+        cycles = 0;
+        cyclesI = 0;
+        bytesLeft = 0;
+        memThisCycleLeft = 3;
+        instructionData = new short[6];
+        instructionDataIdx = 0;
+        timeA = System.currentTimeMillis();
+        timeB = System.currentTimeMillis();
+        timeC = System.currentTimeMillis();
+        cyclesDoneB = 0;
+    }
+
+    public void sendFrame(Frame frame) {
+        this.frame = frame;
+    }
+
+    public Cpu(Op opCodes) {
         this.opCodes = opCodes;
     }
 
@@ -42,8 +80,6 @@ public class Cpu{
     boolean running = true;
     long cyclesDone = 0;
     long instructionsDone = 0;
-    //int programCounterMax = 4259839;
-    //short stackPointerMax = 4095;
     byte cpuPhase = 0;
     byte op = 0;
     byte bytes = 0;
@@ -54,25 +90,23 @@ public class Cpu{
     short[] instructionData = new short[6];
     byte instructionDataIdx = 0;
 
-    public void run() {
+    public void main() {
         if (!running) {
             return;
         };
         cyclesDone++;
         memThisCycleLeft = 3;
 
-
         timeA = System.currentTimeMillis();
         if (timeA-timeB>1000) {
             clock = (int) (cyclesDone-cyclesDoneB);
-
             timeB = System.currentTimeMillis();
             cyclesDoneB = cyclesDone;
         }
-
-
-
-
+        if (timeA-timeC>16.66) {
+            frame.update(this);
+            timeC = System.currentTimeMillis();
+        }
 
         switch(cpuPhase) {
             case 0:
@@ -178,25 +212,25 @@ public class Cpu{
                 registers[instructionData[3]] = val;
                 break;
             case 3: //LD1
-                registers[instructionData[1]] = memory.load(Functions.convertTo24Bit(instructionData[2],instructionData[3],instructionData[4]));
+                registers[instructionData[1]] = Memory.load(Functions.convertTo24Bit(instructionData[2],instructionData[3],instructionData[4]));
                 break;
             case 4: //ST1
-                memory.store(Functions.convertTo24Bit(instructionData[2],instructionData[3],instructionData[4]), (short) registers[instructionData[1]]);
+                Memory.store(Functions.convertTo24Bit(instructionData[2],instructionData[3],instructionData[4]), (short) registers[instructionData[1]]);
                 break;
             case 5: //LD2
-                load =  Functions.convertTo16Bit(memory.load(Functions.convertTo24Bit(instructionData[2],instructionData[3],instructionData[4])),
-                    memory.load(Functions.convertTo24Bit(instructionData[2],instructionData[3], instructionData[4])+1));
+                load =  Functions.convertTo16Bit(Memory.load(Functions.convertTo24Bit(instructionData[2],instructionData[3],instructionData[4])),
+                    Memory.load(Functions.convertTo24Bit(instructionData[2],instructionData[3], instructionData[4])+1));
                 registers[instructionData[1]] = load;
                 break;
             case 6: //ST2
                 store = Functions.convertFrom16Bit(registers[instructionData[1]]);
-                memory.store(Functions.convertTo24Bit(instructionData[2],instructionData[3],instructionData[4]),store[0]);
-                memory.store(Functions.convertTo24Bit(instructionData[2],instructionData[3], instructionData[4])+1,store[1]);
+                Memory.store(Functions.convertTo24Bit(instructionData[2],instructionData[3],instructionData[4]),store[0]);
+                Memory.store(Functions.convertTo24Bit(instructionData[2],instructionData[3], instructionData[4])+1,store[1]);
                 break;
             case 7: //LD3
-                byte1 = memory.load(Functions.convertTo24Bit(instructionData[2],instructionData[3],instructionData[4]));
-                byte2 = memory.load(Functions.convertTo24Bit(instructionData[2],instructionData[3],(instructionData[4]))+1);
-                byte3 = memory.load(Functions.convertTo24Bit(instructionData[2],instructionData[3],(instructionData[4]))+2);
+                byte1 = Memory.load(Functions.convertTo24Bit(instructionData[2],instructionData[3],instructionData[4]));
+                byte2 = Memory.load(Functions.convertTo24Bit(instructionData[2],instructionData[3],(instructionData[4]))+1);
+                byte3 = Memory.load(Functions.convertTo24Bit(instructionData[2],instructionData[3],(instructionData[4]))+2);
                 load = Functions.convertTo24Bit(byte1,byte2,byte3);
                 registers[instructionData[1]] = load;
                 break;
@@ -205,9 +239,9 @@ public class Cpu{
                 address2 = Functions.convertTo24Bit(instructionData[2],instructionData[3],instructionData[4])+1;
                 address3 = Functions.convertTo24Bit(instructionData[2],instructionData[3],instructionData[4])+2;
                 store = Functions.convertFrom24Bit(registers[instructionData[1]]);
-                memory.store(address1,store[0]);
-                memory.store(address2,store[1]);
-                memory.store(address3,store[2]);
+                Memory.store(address1,store[0]);
+                Memory.store(address2,store[1]);
+                Memory.store(address3,store[2]);
                 break;
             case 9: //LDI1
                 registers[instructionData[1]] = instructionData[2];
@@ -265,21 +299,21 @@ public class Cpu{
                 break;
             case 21: //JSR
                 bytes = Functions.convertFrom24Bit(programCounter);
-                memory.store(stackPointer,bytes[0]);
+                Memory.store(stackPointer,bytes[0]);
                 stackPointer++;
-                memory.store(stackPointer,bytes[1]);
+                Memory.store(stackPointer,bytes[1]);
                 stackPointer++;
-                memory.store(stackPointer,bytes[2]);
+                Memory.store(stackPointer,bytes[2]);
                 stackPointer++;
                 programCounter = Functions.convertTo24Bit(instructionData[1],instructionData[2],instructionData[3]);
                 break;
             case 22: //RFS
                 stackPointer--;
-                byte3 = memory.load(stackPointer);
+                byte3 = Memory.load(stackPointer);
                 stackPointer--;
-                byte2 = memory.load(stackPointer);
+                byte2 = Memory.load(stackPointer);
                 stackPointer--;
-                byte1 = memory.load(stackPointer);
+                byte1 = Memory.load(stackPointer);
                 programCounter = Functions.convertTo24Bit(byte1,byte2,byte3);
                 break;
             case 23: //JG
@@ -325,12 +359,12 @@ public class Cpu{
                 break;
             case 31: //PSH1
                 bytes = Functions.convertFrom24Bit(registers[instructionData[1]]);
-                memory.store(stackPointer,bytes[2]);
+                Memory.store(stackPointer,bytes[2]);
                 stackPointer++;
                 break;
             case 32: //POP1
                 stackPointer--;
-                byte3 = memory.load(stackPointer);
+                byte3 = Memory.load(stackPointer);
                 registers[instructionData[1]] = Functions.convertTo24Bit((short) 0, (short) 0,byte3);
                 break;
             case 33: //TRR
@@ -435,35 +469,35 @@ public class Cpu{
             case 53: //INT
                 if (!flagInterruptDisable) {
                     bytes = Functions.convertFrom24Bit(programCounter);
-                    memory.store(stackPointer,bytes[0]);
+                    Memory.store(stackPointer,bytes[0]);
                     stackPointer++;
-                    memory.store(stackPointer,bytes[1]);
+                    Memory.store(stackPointer,bytes[1]);
                     stackPointer++;
-                    memory.store(stackPointer,bytes[2]);
+                    Memory.store(stackPointer,bytes[2]);
                     stackPointer++;
 
                     if (flagCarry) {
-                        memory.store(stackPointer,(short) 1);
+                        Memory.store(stackPointer,(short) 1);
                     } else {
-                        memory.store(stackPointer,(short) 0);
+                        Memory.store(stackPointer,(short) 0);
                     }
                     stackPointer++;
                     if (flagZero) {
-                        memory.store(stackPointer,(short) 1);
+                        Memory.store(stackPointer,(short) 1);
                     } else {
-                        memory.store(stackPointer,(short) 0);
+                        Memory.store(stackPointer,(short) 0);
                     }
                     stackPointer++;
                     if (flagOverflow) {
-                        memory.store(stackPointer,(short) 1);
+                        Memory.store(stackPointer,(short) 1);
                     } else {
-                        memory.store(stackPointer,(short) 0);
+                        Memory.store(stackPointer,(short) 0);
                     }
                     stackPointer++;
                     if (flagSign) {
-                        memory.store(stackPointer,(short) 1);
+                        Memory.store(stackPointer,(short) 1);
                     } else {
-                        memory.store(stackPointer,(short) 0);
+                        Memory.store(stackPointer,(short) 0);
                     }
                     stackPointer++;
                     programCounter = interruptPointers[instructionData[1]];
@@ -471,84 +505,84 @@ public class Cpu{
                 break;
             case 54: //RFI
                 stackPointer--;
-                flagSign = memory.load(stackPointer) == 1;
+                flagSign = Memory.load(stackPointer) == 1;
                 stackPointer--;
-                flagOverflow = memory.load(stackPointer) == 1;
+                flagOverflow = Memory.load(stackPointer) == 1;
                 stackPointer--;
-                flagZero = memory.load(stackPointer) == 1;
+                flagZero = Memory.load(stackPointer) == 1;
                 stackPointer--;
-                flagCarry = memory.load(stackPointer) == 1;
+                flagCarry = Memory.load(stackPointer) == 1;
                 stackPointer--;
-                byte3 = memory.load(stackPointer);
+                byte3 = Memory.load(stackPointer);
                 stackPointer--;
-                byte2 = memory.load(stackPointer);
+                byte2 = Memory.load(stackPointer);
                 stackPointer--;
-                byte1 = memory.load(stackPointer);
+                byte1 = Memory.load(stackPointer);
                 programCounter = Functions.convertTo24Bit(byte1,byte2,byte3);
                 break;
             case 55: //PSH2
                 bytes = Functions.convertFrom24Bit(registers[instructionData[1]]);
-                memory.store(stackPointer,bytes[1]);
+                Memory.store(stackPointer,bytes[1]);
                 stackPointer++;
-                memory.store(stackPointer,bytes[2]);
+                Memory.store(stackPointer,bytes[2]);
                 stackPointer++;
                 break;
             case 56: //POP2
                 byte1 = 0;
                 stackPointer--;
-                byte3 = memory.load(stackPointer);
+                byte3 = Memory.load(stackPointer);
                 stackPointer--;
-                byte2 = memory.load(stackPointer);
+                byte2 = Memory.load(stackPointer);
                 registers[instructionData[1]] = Functions.convertTo24Bit(byte1,byte2,byte3);
                 break;
             case 57: //PSH3
                 bytes = Functions.convertFrom24Bit(registers[instructionData[1]]);
-                memory.store(stackPointer,bytes[0]);
+                Memory.store(stackPointer,bytes[0]);
                 stackPointer++;
-                memory.store(stackPointer,bytes[1]);
+                Memory.store(stackPointer,bytes[1]);
                 stackPointer++;
-                memory.store(stackPointer,bytes[2]);
+                Memory.store(stackPointer,bytes[2]);
                 stackPointer++;
                 break;
             case 58: //POP3
                 stackPointer--;
-                byte3 = memory.load(stackPointer);
+                byte3 = Memory.load(stackPointer);
                 stackPointer--;
-                byte2 = memory.load(stackPointer);
+                byte2 = Memory.load(stackPointer);
                 stackPointer--;
-                byte1 = memory.load(stackPointer);
+                byte1 = Memory.load(stackPointer);
                 registers[instructionData[1]] = Functions.convertTo24Bit(byte1,byte2,byte3);
                 break;
             case 59: //
 
                 break;
             case 60: //LDR1
-                registers[instructionData[1]] = memory.load(registers[instructionData[2]]);
+                registers[instructionData[1]] = Memory.load(registers[instructionData[2]]);
                 break;
             case 61: //STR1
-                memory.store(registers[instructionData[2]], (short) registers[instructionData[1]]);
+                Memory.store(registers[instructionData[2]], (short) registers[instructionData[1]]);
                 break;
             case 62: //LDR2
-                load =  Functions.convertTo16Bit(memory.load(registers[instructionData[2]]),
-                        (short) (memory.load(registers[instructionData[2]])+1));
+                load =  Functions.convertTo16Bit(Memory.load(registers[instructionData[2]]),
+                        (short) (Memory.load(registers[instructionData[2]])+1));
                 registers[instructionData[1]] = load;
                 break;
             case 63: //STR2
                 store = Functions.convertFrom16Bit(registers[instructionData[1]]);
-                memory.store(registers[instructionData[2]],store[0]);
-                memory.store(registers[instructionData[2]]+1,store[1]);
+                Memory.store(registers[instructionData[2]],store[0]);
+                Memory.store(registers[instructionData[2]]+1,store[1]);
                 break;
             case 64: //LDR3
-                load =  Functions.convertTo24Bit(memory.load(registers[instructionData[2]]),
-                        (short) (memory.load(registers[instructionData[2]])+1),
-                        (short) (memory.load(registers[instructionData[2]])+2));
+                load =  Functions.convertTo24Bit(Memory.load(registers[instructionData[2]]),
+                        (short) (Memory.load(registers[instructionData[2]])+1),
+                        (short) (Memory.load(registers[instructionData[2]])+2));
                 registers[instructionData[1]] = load;
                 break;
             case 65: //STR3
                 store = Functions.convertFrom24Bit(registers[instructionData[1]]);
-                memory.store(registers[instructionData[2]],store[0]);
-                memory.store(registers[instructionData[2]]+1,store[1]);
-                memory.store(registers[instructionData[2]]+2,store[2]);
+                Memory.store(registers[instructionData[2]],store[0]);
+                Memory.store(registers[instructionData[2]]+1,store[1]);
+                Memory.store(registers[instructionData[2]]+2,store[2]);
                 break;
             case 66: //
 
@@ -678,12 +712,13 @@ public class Cpu{
     }
 
     public short loadByte() {
-        return memory.load(programCounter);
+        return Memory.load(programCounter);
     }
 
     public void stopCpu() {
         debugPrint("\nCpu Stopped",true);
         running = false;
+        frame.update(this);
     }
 
     public void setFlags(int val) {

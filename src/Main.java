@@ -1,35 +1,40 @@
 
 public class Main {
     public static void main(String[] args) {
-        Memory memory = new Memory();
-        memory.init();
+        Memory.init();
 
         Op opCodes = new Op();
         opCodes.main();
 
-        Cpu cpu = new Cpu(memory,opCodes);
+        Cpu cpu = new Cpu(opCodes);
         cpu.init();
 
         Frame frame = new Frame();
-        frame.main(cpu,memory);
+        frame.main(cpu,opCodes);
 
-        int updateFrameA = 0;
+        cpu.sendFrame(frame);
+
+        //cpu.start();
+
+        /*
+          int updateFrameA = 0;
         int updateFrameB = 1000000;
-
         long startTime = System.currentTimeMillis();
         long test = 0;
         while (cpu.running && test<18000000000000L) {
-            cpu.run();
+            //cpu.main();
             updateFrameA++;
             if (updateFrameB<updateFrameA) {
                 updateFrameA = 0;
-                frame.update(cpu); //TODO:16ms
+                frame.update(cpu);
             }
             test ++;
-        }
-        frame.update(cpu);
+        }*/
+
+
+        //frame.update(cpu);
         //System.out.println(memory.load(6002));
-        long stopTime = System.currentTimeMillis();
+        /*long stopTime = System.currentTimeMillis();
         System.out.println(stopTime - startTime+"ms");
 
 
@@ -38,8 +43,6 @@ public class Main {
         System.out.println("Cycles: "+cpu.cyclesDone);
         System.out.println("Instructions: "+cpu.instructionsDone);
         System.out.println("IPC: "+ (double) Math.round(((double) cpu.instructionsDone/cpu.cyclesDone)*100)/100);
-
-
         System.out.print("r0: "+cpu.registers[0]);
         System.out.print(" | r1: "+cpu.registers[1]);
         System.out.print(" | r2: "+cpu.registers[2]);
@@ -89,7 +92,7 @@ public class Main {
                 System.out.println();
             }
         }
-
+*/
         //TEST
         /*System.out.println(Functions.convertTo24Bit((short) 0, (short) 0, (short) 1));
         System.out.println(Functions.convertTo24Bit((short) 0, (short) 1, (short) 0));

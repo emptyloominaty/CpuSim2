@@ -1,11 +1,11 @@
 import static java.lang.Runtime.getRuntime;
 
 public class Memory {
-    short[] data = new short[16777216]; //16777216
-    boolean[] dataCanUse = new boolean[16777216]; //16777216
-    boolean[] dataCanStore = new boolean[16777216]; //16777216
+    static short[] data = new short[16777216]; //16777216
+    static boolean[] dataCanUse = new boolean[16777216]; //16777216
+    static boolean[] dataCanStore = new boolean[16777216]; //16777216
 
-    public void init() {
+    static public void init() {
         //memory config
         int ramEnd = 65535;
 
@@ -26,6 +26,8 @@ public class Memory {
 
         int ioStart = 16711680;
         int ioEnd = 16711807;
+
+        data = new short[16777216];
 
         //main ram 0-65535
         for (int i = 0; i <= ramEnd; i++) {
@@ -214,7 +216,7 @@ public class Memory {
         store(5042, (short) 11);
         store(5043, (short) 29);
         store(5044, (short) 0);
-        store(5045, (short) 16);
+        store(5045, (short) 64);
         store(5046, (short) 0);
 
         store(5047, (short) 12);
@@ -258,12 +260,12 @@ public class Memory {
         //realMemoryUsage();
     }
 
-    public void realMemoryUsage() {
+    public static void realMemoryUsage() {
         long memoryUsage = (getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/1048576;
         System.out.println(memoryUsage+"MB");
     }
 
-    public void store(int address, short value) {
+    public static void store(int address, short value) {
         if (value>255) {
             value=255;
         }
@@ -272,7 +274,7 @@ public class Memory {
         }
     }
 
-    public short load(int address) {
+    public static short load(int address) {
         if (dataCanUse[address]) {
             return data[address];
         } else {

@@ -4,6 +4,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class Frame implements ActionListener {
+    JButton buttonStartCpu;
+    Cpu cpu;
+    Op opCodes;
+    boolean cpuStarted = false;
+    boolean firstStart = true;
+
     int fontSize1 = 22;
     int fontSize2 = 18;
     String fontName = "Consolas";
@@ -12,7 +18,9 @@ public class Frame implements ActionListener {
     JLabel labelSP = new JLabel();
     JLabel labelPC = new JLabel();
 
-    public void main(Cpu cpu, Memory memory) {
+    public void main(Cpu cpu,Op opCodes) {
+        this.cpu = cpu;
+        this.opCodes = opCodes;
 
         JPanel panel1 =  new JPanel();
         panel1.setBackground(new Color(60, 60, 60));
@@ -67,6 +75,17 @@ public class Frame implements ActionListener {
         frame.add(panel1);
         frame.add(panel2);
 
+        buttonStartCpu = new JButton();
+        buttonStartCpu.setBounds(30,20,100,24);
+        buttonStartCpu.addActionListener(this);
+        buttonStartCpu.setText("Start");
+        buttonStartCpu.setFocusable(false);
+        buttonStartCpu.setFont(new Font(fontName,Font.PLAIN,fontSize1));
+        buttonStartCpu.setForeground(new Color(220,220,220));
+        buttonStartCpu.setBackground(new Color(60,60,60));
+        buttonStartCpu.setBorder(BorderFactory.createStrokeBorder(new BasicStroke(1.5f)));
+        frame.add(buttonStartCpu);
+
         //Panel1
         panel1.setLayout(new GridLayout(16,1));
         for (int i = 0; i<labelTexts.length; i++) {
@@ -115,6 +134,27 @@ public class Frame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        if (e.getSource()==buttonStartCpu) {
+            if (cpuStarted) {
+                buttonStartCpu.setText("Start");
+                System.out.println("STOPPED");
+                cpuStarted = false;
+                cpu.running = false;
+                System.out.println(cpu.getName() + " (" + cpu.getState() + ")");
+            } else {
+                buttonStartCpu.setText("Stop");
+                cpuStarted = true;
+                System.out.println("STARTED");
+                cpu.running = true;
+                if (firstStart) {
+                    cpu.start();
+                    firstStart = false;
+                } else {
+                    cpu.resetCpu();
+                }
+                System.out.println(cpu.getName() + " (" + cpu.getState() + ")");
+            }
 
+        }
     }
 }
