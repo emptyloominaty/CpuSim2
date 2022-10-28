@@ -1,6 +1,8 @@
 public class Cpu extends Thread {
     boolean debug = false;
     int clock = 0;
+    long timeStart = System.currentTimeMillis();
+    long timeEnd = System.currentTimeMillis();
     long timeA = System.currentTimeMillis();
     long timeB = System.currentTimeMillis();
     long timeC = System.currentTimeMillis();
@@ -41,6 +43,7 @@ public class Cpu extends Thread {
         timeB = System.currentTimeMillis();
         timeC = System.currentTimeMillis();
         cyclesDoneB = 0;
+        timeStart = System.currentTimeMillis();
     }
 
     public void sendFrame(Frame frame) {
@@ -106,6 +109,7 @@ public class Cpu extends Thread {
         if (timeA-timeC>16.66) {
             frame.update(this);
             timeC = System.currentTimeMillis();
+            timeEnd = timeC;
         }
 
         switch(cpuPhase) {

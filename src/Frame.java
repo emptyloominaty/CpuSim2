@@ -1,7 +1,10 @@
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 
 public class Frame implements ActionListener {
     JButton buttonStartCpu;
@@ -9,6 +12,9 @@ public class Frame implements ActionListener {
     Op opCodes;
     boolean cpuStarted = false;
     boolean firstStart = true;
+
+    DecimalFormatSymbols dfs = new DecimalFormatSymbols();
+    DecimalFormat df = new DecimalFormat("###,###",dfs);
 
     int fontSize1 = 22;
     int fontSize2 = 18;
@@ -19,18 +25,29 @@ public class Frame implements ActionListener {
     JLabel labelPC = new JLabel();
 
     public void main(Cpu cpu,Op opCodes) {
+        dfs.setGroupingSeparator(' ');
         this.cpu = cpu;
         this.opCodes = opCodes;
 
         JPanel panel1 =  new JPanel();
         panel1.setBackground(new Color(60, 60, 60));
-        panel1.setBounds(1,50,400,500);
+        panel1.setBounds(21,50,400,500);
         panel1.setBorder(BorderFactory.createLineBorder(Color.black));
 
         JPanel panel2 =  new JPanel();
         panel2.setBackground(new Color(58, 58, 58));
-        panel2.setBounds(402,50,500,500);
+        panel2.setBounds(425,50,500,500);
         panel2.setBorder(BorderFactory.createLineBorder(Color.black));
+
+        JPanel panel3 =  new JPanel();
+        panel3.setBackground(new Color(58, 58, 58));
+        panel3.setBounds(930,50,310,500);
+        panel3.setBorder(BorderFactory.createLineBorder(Color.black));
+
+        JPanel panelBottom =  new JPanel();
+        panelBottom.setBackground(new Color(60, 60, 60));
+        panelBottom.setBounds(20,553,1220,100);
+        panelBottom.setBorder(BorderFactory.createLineBorder(Color.black));
 
         for (int i = 0; i<labelRegisters.length; i++) {
             labelRegisters[i] = new JLabel();
@@ -74,9 +91,27 @@ public class Frame implements ActionListener {
         frame.setFocusable(true);
         frame.add(panel1);
         frame.add(panel2);
+        frame.add(panel3);
+        frame.add(panelBottom);
+
+        //TODO:Memory
+        JTextArea memText = new JTextArea ( 32, 30 );
+        memText.setMargin(new Insets(10,10,10,10));
+        memText.setFont(new Font(fontName,Font.PLAIN,15));
+        memText.setBackground(new Color(21, 21, 21));
+        memText.setForeground(new Color(231, 231, 231));
+        JScrollPane scroll = new JScrollPane ( memText );
+        //scroll.setVerticalScrollBarPolicy ( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
+        /*for (int y = 4096; y<10000; y+=8) {
+            memText.append(Integer.toHexString(y)+":");
+            for (int x = 0; x<8; x++) {
+                memText.append(" "+String.format("%02X", Memory.data[y+x]));
+            }
+            memText.append("\n");
+        }*/
 
         buttonStartCpu = new JButton();
-        buttonStartCpu.setBounds(30,20,100,24);
+        buttonStartCpu.setBounds(30,20,200,24);
         buttonStartCpu.addActionListener(this);
         buttonStartCpu.setText("Start");
         buttonStartCpu.setFocusable(false);
@@ -84,7 +119,6 @@ public class Frame implements ActionListener {
         buttonStartCpu.setForeground(new Color(220,220,220));
         buttonStartCpu.setBackground(new Color(60,60,60));
         buttonStartCpu.setBorder(BorderFactory.createStrokeBorder(new BasicStroke(1.5f)));
-        frame.add(buttonStartCpu);
 
         //Panel1
         panel1.setLayout(new GridLayout(16,1));
@@ -97,7 +131,13 @@ public class Frame implements ActionListener {
         labelTexts[3].setText("Instructions Done: "+cpu.instructionsDone);
         labelTexts[4].setText("IPC: "+ (double) Math.round(((double) cpu.instructionsDone/cpu.cyclesDone)*100)/100);
 
+
+        panelBottom.add(buttonStartCpu);
+
+
         //Panel2
+        panel1.setBorder(new EmptyBorder(10, 5, 10, 5));
+        panel2.setBorder(new EmptyBorder(10, 5, 10, 5));
         panel2.setLayout(new GridLayout(18,2));
         panel2.add(labelPC);
         panel2.add(labelSP);
@@ -106,8 +146,7 @@ public class Frame implements ActionListener {
         for (int i = 0; i<32; i++) {
             panel2.add(labelRegisters[i]);
         }
-
-
+        panel3.add(scroll);
     }
 
     public void update(Cpu cpu) {
@@ -117,16 +156,16 @@ public class Frame implements ActionListener {
         labelPC.setText(" PC: "+cpu.programCounter+" ");
         labelSP.setText(" SP: "+cpu.stackPointer+" ");
         labelTexts[1].setText("Clock: "+getClock(cpu.clock));
-        labelTexts[2].setText("Cycles Done: "+cpu.cyclesDone);
-        labelTexts[3].setText("Instructions Done: "+cpu.instructionsDone);
+        labelTexts[2].setText("Cycles Done: "+df.format(cpu.cyclesDone));
+        labelTexts[3].setText("Instructions Done: "+df.format(cpu.instructionsDone));
         labelTexts[4].setText("IPC: "+ (double) Math.round(((double) cpu.instructionsDone/cpu.cyclesDone)*100)/100);
     }
 
     public String getClock(long clock) {
         if (clock>1000000) {
-            return clock/1000000+"MHz";
+            return ((double) Math.round((clock/1000000d)*10)/10) +"MHz";
         } else if (clock>1000) {
-            return clock/1000+"kHz";
+            return ((double) Math.round((clock/1000d)*10)/10) +"kHz";
         } else {
             return clock+"Hz";
         }
