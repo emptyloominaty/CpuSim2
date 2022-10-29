@@ -1,6 +1,6 @@
 public class Op {
     byte[][] codes = new byte[255][2];
-
+    String[] names = new String[255];
 
     public void main() {//[0]=bytes,[1]=cycles
         codes[0] = new byte[]{1, 1}; //STOP
@@ -125,6 +125,128 @@ public class Op {
         codes[109] = new byte[]{1, 1}; //
 
         codes[110] = new byte[]{1, 1}; //
+
+        //--------------------------------------------------
+        names[0] = "STOP"; //STOP
+        names[1] = "ADD"; //ADD
+        names[2] = "SUB"; //SUB
+        names[3] = "LD1"; //LD1 (8bit)
+        names[4] = "ST1"; //ST1 (8bit)
+        names[5] = "LD2"; //LD2 (16bit)
+        names[6] = "ST2"; //ST2 (16bit)
+        names[7] = "LD3"; //LD3 (24bit)
+        names[8] = "ST3"; //ST3 (24bit)
+        names[9] = "LDI1"; //LDI1 (8bit)
+        names[10] = "LDI2"; //LDI2 (16bit)
+        names[11] = "LDI3"; //LDI3 (24bit)
+
+        names[12] = "INC"; //INC
+        names[13] = "DEC"; //DEC
+        names[14] = "MUL"; //MUL
+        names[15] = "DIV"; //DIV
+        names[16] = "DIVR"; //DIVR (Get Remainder of Division)
+        names[17] = "ADC"; //ADC
+        names[18] = "SUC"; //SUC
+        names[19] = "NOP"; //NOP
+
+        names[20] = "JMP"; //JMP
+        names[21] = "JSR"; //JSR
+        names[22] = "RFS"; //RFS
+        names[23] = "JG"; //JG (Greater)
+        names[24] = "JL"; //JL (Less)
+        names[25] = "JNG"; //JNG (Not Greater)
+        names[26] = "JNL"; //JNL (Not Less)
+        names[27] = "JE"; //JE (Equal)
+        names[28] = "JNE"; //JNE (Not Equal)
+        names[29] = "JC"; //JC (Carry)
+
+        names[30] = "JNC"; //JNC (Not Carry)
+        names[31] = "PHS1"; //PSH1
+        names[32] = "POP1"; //POP1
+        names[33] = "TRR"; //TRR (Register to Register)
+        names[34] = "TRP"; //TRP (Register to Program Counter)
+        names[35] = "TPR"; //TPR (Program Counter to Register)
+        names[36] = "TRS"; //TRS (Register to Stack Pointer)
+        names[37] = "TSR"; //TSR (Stack Pointer to Register
+        names[38] = "TCR"; //TCR (Carry Flag to Register)
+        names[39] = "TRC"; //TRC (Register to Carry Flag)
+
+        names[40] = "AD2"; //AD2 (A=A+B)
+        names[41] = "SU2"; //SU2 (A=A-B)
+        names[42] = "ADDI1"; //ADDI1
+        names[43] = "SUBI1"; //SUBI1 (r-val = r)
+        names[44] = "MULI1"; //MULI1
+        names[45] = "DIVI1"; //DIVI1  (r/val = r)
+        names[46] = "ADDI2"; //ADDI2
+        names[47] = "SUBI2"; //SUBI2
+        names[48] = "ADDI3"; //ADDI3
+        names[49] = "SUBI3"; //SUBI3
+
+        names[50] = "STAIP"; //STAIP (Store Address to Interrupt Pointer)
+        names[51] = "SEI"; //SEI (Enable Interrupts)
+        names[52] = "SDI"; //SDI (Disable Interrupts)
+        names[53] = "INT"; //INT (Software Interrupt) (pc,fl)
+        names[54] = "RFI"; //RFI
+        names[55] = "PSH2"; //PSH2
+        names[56] = "POP2"; //POP2
+        names[57] = "PSH3"; //PSH3
+        names[58] = "POP3"; //POP3
+        names[59] = ""; //
+
+        names[60] = "LDR1"; //LDR1 (Load from Address stored in Register) 8bit
+        names[61] = "STR1"; //STR1 (Store to Address stored in Register) 8bit
+        names[62] = "LDR2"; //LDR2 (Load from Address stored in Register) 16bit
+        names[63] = "STR2"; //STR2 (Store to Address stored in Register) 16bit
+        names[64] = "LDR3"; //LDR3 (Load from Address stored in Register) 24bit
+        names[65] = "STR3"; //STR3 (Store to Address stored in Register) 24bit
+        names[66] = ""; //
+        names[67] = ""; //
+        names[68] = ""; //
+        names[69] = ""; //
+
+        names[70] = "ROL"; //ROL (Rotate Left)
+        names[71] = "ROR"; //ROR (Rotate Right)
+        names[72] = "SLL"; //SLL (Shift Logical Left)
+        names[73] = "SLR"; //SLR (Shift Logical Right)
+        names[74] = "SRR"; //SRR (Shift Arithmetic Right)
+        names[75] = "AND"; //AND
+        names[76] = "OR"; //OR
+        names[77] = "XOR"; //XOR
+        names[78] = "NOT"; //NOT
+        names[79] = ""; //
+
+        names[80] = "CBT8"; //CBT8 //String(r0) to 8 bits (r0-r7)
+        names[81] = "C8TB"; //C8TB //8 bits (r0-r7) to String(r0)
+        names[82] = ""; //
+        names[83] = ""; //
+        names[84] = ""; //
+        names[85] = ""; //
+        names[86] = ""; //
+        names[87] = ""; //
+        names[88] = ""; //
+        names[89] = ""; //
+
+        names[90] = ""; //
+        names[91] = ""; //
+        names[92] = ""; //
+        names[93] = ""; //
+        names[94] = ""; //
+        names[95] = ""; //
+        names[96] = ""; //
+        names[97] = ""; //
+        names[98] = ""; //
+        names[99] = ""; //
+
+        names[100] = ""; //
+        names[101] = ""; //
+        names[102] = ""; //
+        names[103] = ""; //
+        names[104] = ""; //
+        names[105] = ""; //
+        names[106] = ""; //
+        names[107] = ""; //
+        names[108] = ""; //
+        names[109] = ""; //
 
 
     }

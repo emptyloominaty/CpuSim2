@@ -8,6 +8,10 @@ import java.text.DecimalFormatSymbols;
 
 public class Frame implements ActionListener {
     JButton buttonStartCpu;
+    JButton buttonLoad;
+    JButton buttonLoadMC;
+    JButton buttonLoadUS;
+    JTextArea memText;
     Cpu cpu;
     Op opCodes;
     boolean cpuStarted = false;
@@ -95,7 +99,7 @@ public class Frame implements ActionListener {
         frame.add(panelBottom);
 
         //TODO:Memory
-        JTextArea memText = new JTextArea ( 32, 30 );
+        memText = new JTextArea ( 24, 30 );
         memText.setMargin(new Insets(10,10,10,10));
         memText.setFont(new Font(fontName,Font.PLAIN,15));
         memText.setBackground(new Color(21, 21, 21));
@@ -111,7 +115,6 @@ public class Frame implements ActionListener {
         }*/
 
         buttonStartCpu = new JButton();
-        buttonStartCpu.setBounds(30,20,200,24);
         buttonStartCpu.addActionListener(this);
         buttonStartCpu.setText("Start");
         buttonStartCpu.setFocusable(false);
@@ -119,6 +122,33 @@ public class Frame implements ActionListener {
         buttonStartCpu.setForeground(new Color(220,220,220));
         buttonStartCpu.setBackground(new Color(60,60,60));
         buttonStartCpu.setBorder(BorderFactory.createStrokeBorder(new BasicStroke(1.5f)));
+
+        buttonLoad = new JButton();
+        buttonLoad.addActionListener(this);
+        buttonLoad.setText("Load");
+        buttonLoad.setFocusable(false);
+        buttonLoad.setFont(new Font(fontName,Font.PLAIN,fontSize1));
+        buttonLoad.setForeground(new Color(220,220,220));
+        buttonLoad.setBackground(new Color(60,60,60));
+        buttonLoad.setBorder(BorderFactory.createStrokeBorder(new BasicStroke(1.5f)));
+
+        buttonLoadMC = new JButton();
+        buttonLoadMC.addActionListener(this);
+        buttonLoadMC.setText("Load MC");
+        buttonLoadMC.setFocusable(false);
+        buttonLoadMC.setFont(new Font(fontName,Font.PLAIN,fontSize1));
+        buttonLoadMC.setForeground(new Color(220,220,220));
+        buttonLoadMC.setBackground(new Color(60,60,60));
+        buttonLoadMC.setBorder(BorderFactory.createStrokeBorder(new BasicStroke(1.5f)));
+
+        buttonLoadUS = new JButton();
+        buttonLoadUS.addActionListener(this);
+        buttonLoadUS.setText("Load User Storage");
+        buttonLoadUS.setFocusable(false);
+        buttonLoadUS.setFont(new Font(fontName,Font.PLAIN,fontSize1));
+        buttonLoadUS.setForeground(new Color(220,220,220));
+        buttonLoadUS.setBackground(new Color(60,60,60));
+        buttonLoadUS.setBorder(BorderFactory.createStrokeBorder(new BasicStroke(1.5f)));
 
         //Panel1
         panel1.setLayout(new GridLayout(16,1));
@@ -133,7 +163,9 @@ public class Frame implements ActionListener {
 
 
         panelBottom.add(buttonStartCpu);
-
+        panelBottom.add(buttonLoad);
+        panelBottom.add(buttonLoadMC);
+        panelBottom.add(buttonLoadUS);
 
         //Panel2
         panel1.setBorder(new EmptyBorder(10, 5, 10, 5));
@@ -193,7 +225,14 @@ public class Frame implements ActionListener {
                 }
                 System.out.println(cpu.getName() + " (" + cpu.getState() + ")");
             }
-
+        } else if (e.getSource()==buttonLoad) {
+            //Assemble
+            Assembler.assemble(memText.getText());
+        } else if (e.getSource()==buttonLoadMC) {
+            //Load Machine Code
+            Assembler.loadMachineCode(memText.getText());
+        } else if (e.getSource()==buttonLoadUS) {
+            //Load UserStorage
         }
     }
 }

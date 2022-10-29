@@ -66,6 +66,10 @@ public class Memory {
         }
 
 
+        //realMemoryUsage();
+    }
+
+    public static void loadTestProgram() {
         //test
         store(4096, (short) 3);
         store(4097, (short) 0); //reg
@@ -243,21 +247,11 @@ public class Memory {
         store(5064, (short) 19);
         store(5065, (short) 183);
 
-
-
-
-
         store(6000, (short) 10);
         store(6001, (short) 10);
 
         store(6004, (short) 2);
         store(6005, (short) 25);
-
-        //System.out.println(load(0));
-        //System.out.println(dataCanUse[65538]);
-
-
-        //realMemoryUsage();
     }
 
     public static void realMemoryUsage() {
