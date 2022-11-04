@@ -4,29 +4,28 @@ public class Memory {
     static short[] data = new short[16777216]; //16777216
     static boolean[] dataCanUse = new boolean[16777216]; //16777216
     static boolean[] dataCanStore = new boolean[16777216]; //16777216
+    //memory config
+    static int ramEnd = 65535;
+
+    static int extendedRamStart = 65536;
+    static int extendedRamEnd = 4259839;
+
+    static int vramStart = 10485760;
+    static int vramEnd = 11010047;
+
+    static int romStart = 11534336;
+    static int romEnd = 12582911;
+
+    static int ursStart = 12582912;
+    static int ursEnd = 13631487;
+
+    static int charRomStart = 13631488;
+    static int charRomEnd = 13633535;
+
+    static int ioStart = 16711680;
+    static int ioEnd = 16711807;
 
     static public void init() {
-        //memory config
-        int ramEnd = 65535;
-
-        int extendedRamStart = 65536;
-        int extendedRamEnd = 4259839;
-
-        int vramStart = 10485760;
-        int vramEnd = 11010047;
-
-        int romStart = 11534336;
-        int romEnd = 12582911;
-
-        int ursStart = 12582912;
-        int ursEnd = 13631487;
-
-        int charRomStart = 13631488;
-        int charRomEnd = 13633535;
-
-        int ioStart = 16711680;
-        int ioEnd = 16711807;
-
         data = new short[16777216];
 
         //main ram 0-65535

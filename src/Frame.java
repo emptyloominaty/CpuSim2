@@ -227,7 +227,7 @@ public class Frame implements ActionListener {
             }
         } else if (e.getSource()==buttonLoad) {
             //Assemble
-            Assembler.assemble(memText.getText());
+            Assembler.assemble(memText.getText(), opCodes);
         } else if (e.getSource()==buttonLoadMC) {
             //Load Machine Code
             Assembler.loadMachineCode(memText.getText());
