@@ -152,6 +152,8 @@ public class Cpu extends Thread {
         cpuPhase++;
         if (bytes==1 && cyclesI == 0) {
             execute();
+        } else if (bytes!=1) {
+            fetchOtherBytes();
         }
         if (op==0) {
             stopCpu();

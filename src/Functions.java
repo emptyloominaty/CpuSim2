@@ -33,5 +33,14 @@ public class Functions {
         return new short[]{(short) a, (short) b};
     }
 
+    public static boolean isNumeric(String str) {
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch(NumberFormatException e){
+            return false;
+        }
+    }
+
 
 }

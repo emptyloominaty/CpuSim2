@@ -3,6 +3,8 @@ import obj.As_instruction;
 import obj.As_var;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class Assembler {
@@ -16,10 +18,11 @@ public class Assembler {
 
         lines = code.split("\n");
 
-        As_var[] vars = new As_var[lines.length+16];
-        As_instruction[] instructions = new As_instruction[lines.length+16];
+        As_var[] vars = new As_var[lines.length];
+        As_instruction[] instructions = new As_instruction[lines.length];
         As_function[] functions = new As_function[lines.length];
 
+        Map<String, As_function> functionsMap = new HashMap<String, As_function>();
         int varIdx = 0;
         int instructionIdx = 0;
         int functionIdx = 0;
@@ -60,18 +63,14 @@ public class Assembler {
                     val2 = Integer.parseInt(val);
                 }
 
-                System.out.println(name+" - "+val2+" - "+address+" - "+Short.parseShort(line[1]));
+                //System.out.println(name+" - "+val2+" - "+address+" - "+Short.parseShort(line[1]));
 
-                vars[varIdx] = new As_var(name,val2,address, (byte) Short.parseShort(line[1]));
+                vars[varIdx] = new As_var(name,val2,0, (byte) Short.parseShort(line[1]));
                 varIdx ++;
             } else if (func) { //function
-                String functionName = line[0].replace("<","");
-                functionName = line[0].replace(">","");
+                String functionName = line[0].replace("<","").replace(">","");
                 functions[functionIdx] = new As_function(functionName,i,4096+bytes);
-
-                //functions[fnc] = {name:fnc,line:i, memAddress:(stackSize+1)+bytes}
-
-
+                functionsMap.put(functionName,functions[functionIdx]);
             } else if (!line[0].equals("") && !line[0].equals(" ")) { //instruction
                 int idInst = opcodes.names.get(line[0].toUpperCase());
                 byte bytesInst = opcodes.codes[idInst][0];
@@ -89,7 +88,7 @@ public class Assembler {
                 } else if (line.length>1) {
                     vals[0] = line[1];
                 }
-                instructions[instructionIdx] = new As_instruction(line[0],bytesInst,vals,0,i);
+                instructions[instructionIdx] = new As_instruction(line[0],bytesInst,vals,4096+bytes,i);
 
                 bytes += bytesInst;
                 instructionIdx++;
@@ -98,17 +97,82 @@ public class Assembler {
 
         }
 
+        int varsBytes = 0;
+        int varsAddress = 4096+bytes;
+        for (int i = 0; i<varIdx; i++) {
+            //calc vars addresses
+            if (vars[i].address==0) {
+                vars[i].address = varsAddress + varsBytes;
+                varsBytes += vars[i].bytes;
+            }
 
-        //calc vars addresses
+            //write vars to memory
+            short[] store;
+            if (vars[i].bytes==1) {
+                Memory.store(vars[i].address, (short) vars[i].value);
+            } else if (vars[i].bytes==2) {
+                store = Functions.convertFrom16Bit(vars[i].value);
+                Memory.store(vars[i].address,store[0]);
+                Memory.store(vars[i].address+1,store[1]);
+            } else if (vars[i].bytes==3) {
+                store = Functions.convertFrom24Bit(vars[i].value);
+                Memory.store(vars[i].address,store[0]);
+                Memory.store(vars[i].address+1,store[1]);
+                Memory.store(vars[i].address+2,store[2]);
+            }
 
-        //write vars to memory
-
+        }
         //write instruction to memory
+        for (int i = 0; i<instructionIdx; i++) {
+            int instructionAddress = instructions[i].address;
+            byte instructionBytes = instructions[i].bytes;
+            String iname = instructions[i].name.toUpperCase();
+            int opCode = opcodes.names.get(iname);
 
 
+            Memory.store(instructions[i].address, (short) opCode);
+
+            if (iname.equals("STAIP")) {
+                short[] values;
+                if (Functions.isNumeric(instructions[i].values[0])) {
+                    values = Functions.convertFrom24Bit(Integer.parseInt(instructions[i].values[0]));
+                } else {
+                    values = Functions.convertFrom24Bit(functionsMap.get(instructions[i].values[0]).address);
+                }
+                Memory.store(instructions[i].address+1, values[0]);
+                Memory.store(instructions[i].address+2, values[1]);
+                Memory.store(instructions[i].address+3, values[2]);
+            } else if (iname.equals("LDI1") || iname.equals("LDI2") || iname.equals("LDI3") || iname.equals("ADDI1") ||
+                    iname.equals("ADDI2") || iname.equals("ADDI3") || iname.equals("MULI1") || iname.equals("DIVI1") ||
+                    iname.equals("SUBI1") || iname.equals("SUBI2") || iname.equals("SUBI3")) {
+
+            } else if (iname.equals("LDR1") || iname.equals("LDR2") || iname.equals("LDR3") ||
+                    iname.equals("STR1") || iname.equals("STR2") || iname.equals("STR3")) {
+
+            } else {
+                
+            }
+
+
+        }
 
 
     }
+
+    public static String removeRfromCode(String string) {
+        boolean found = string.matches("\\b([R-R-r-r][0-9])");
+        if (found) {
+            return string.substring(1);
+        }
+        return string;
+    }
+
+    public static boolean findRinCode(String string) {
+        return string.matches("\\b([R-R-r-r][0-9])");
+    }
+
+
+
     public static void loadMachineCode(String code) {
         Memory.init();
         String[] bytes;
