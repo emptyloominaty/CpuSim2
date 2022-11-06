@@ -11,6 +11,8 @@ public class Frame implements ActionListener {
     JButton buttonLoad;
     JButton buttonLoadMC;
     JButton buttonLoadUS;
+    JButton buttonMemory;
+    JButton buttonScreen;
     JTextArea memText;
     Cpu cpu;
     Op opCodes;
@@ -98,13 +100,13 @@ public class Frame implements ActionListener {
         frame.add(panel3);
         frame.add(panelBottom);
 
-        //TODO:Memory
         memText = new JTextArea ( 24, 30 );
         memText.setMargin(new Insets(10,10,10,10));
         memText.setFont(new Font(fontName,Font.PLAIN,15));
         memText.setBackground(new Color(21, 21, 21));
         memText.setForeground(new Color(231, 231, 231));
         JScrollPane scroll = new JScrollPane ( memText );
+        memText.setText(";CODE EDITOR;");
         //scroll.setVerticalScrollBarPolicy ( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
         /*for (int y = 4096; y<10000; y+=8) {
             memText.append(Integer.toHexString(y)+":");
@@ -150,6 +152,24 @@ public class Frame implements ActionListener {
         buttonLoadUS.setBackground(new Color(60,60,60));
         buttonLoadUS.setBorder(BorderFactory.createStrokeBorder(new BasicStroke(1.5f)));
 
+        buttonMemory = new JButton();
+        buttonMemory.addActionListener(this);
+        buttonMemory.setText("Show Memory");
+        buttonMemory.setFocusable(false);
+        buttonMemory.setFont(new Font(fontName,Font.PLAIN,fontSize1));
+        buttonMemory.setForeground(new Color(220,220,220));
+        buttonMemory.setBackground(new Color(60,60,60));
+        buttonMemory.setBorder(BorderFactory.createStrokeBorder(new BasicStroke(1.5f)));
+
+        buttonScreen = new JButton();
+        buttonScreen.addActionListener(this);
+        buttonScreen.setText("Show Screen");
+        buttonScreen.setFocusable(false);
+        buttonScreen.setFont(new Font(fontName,Font.PLAIN,fontSize1));
+        buttonScreen.setForeground(new Color(220,220,220));
+        buttonScreen.setBackground(new Color(60,60,60));
+        buttonScreen.setBorder(BorderFactory.createStrokeBorder(new BasicStroke(1.5f)));
+
         //Panel1
         panel1.setLayout(new GridLayout(16,1));
         for (int i = 0; i<labelTexts.length; i++) {
@@ -166,6 +186,8 @@ public class Frame implements ActionListener {
         panelBottom.add(buttonLoad);
         panelBottom.add(buttonLoadMC);
         panelBottom.add(buttonLoadUS);
+        panelBottom.add(buttonMemory);
+        panelBottom.add(buttonScreen);
 
         //Panel2
         panel1.setBorder(new EmptyBorder(10, 5, 10, 5));
@@ -233,6 +255,11 @@ public class Frame implements ActionListener {
             Assembler.loadMachineCode(memText.getText());
         } else if (e.getSource()==buttonLoadUS) {
             //Load UserStorage
+        } else if (e.getSource()==buttonMemory) {
+            MemoryFrame.main();
+        } else if (e.getSource()==buttonScreen) {
+            Screen.main();
         }
+
     }
 }

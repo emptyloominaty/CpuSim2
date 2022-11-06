@@ -19,9 +19,6 @@ public class Memory {
     static int ursStart = 12582912;
     static int ursEnd = 13631487;
 
-    static int charRomStart = 13631488;
-    static int charRomEnd = 13633535;
-
     static int ioStart = 16711680;
     static int ioEnd = 16711807;
 
@@ -52,11 +49,6 @@ public class Memory {
         for (int i = ursStart; i <= ursEnd; i++) {
             dataCanUse[i] = true;
             dataCanStore[i] = true;
-        }
-        //char rom 13631488 - 13633535
-        for (int i = charRomStart; i <= charRomEnd; i++) {
-            dataCanUse[i] = true;
-            dataCanStore[i] = false;
         }
         //I/O 16711680 - 16711807
         for (int i = ioStart; i <= ioEnd; i++) {
