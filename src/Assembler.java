@@ -23,13 +23,15 @@ public class Assembler {
         As_function[] functions = new As_function[lines.length];
 
         Map<String, As_function> functionsMap = new HashMap<String, As_function>();
+        Map<String, As_var> varsMap = new HashMap<String, As_var>();
+
         int varIdx = 0;
         int instructionIdx = 0;
         int functionIdx = 0;
 
         int bytes = 0;
 
-        System.out.println(Arrays.toString(lines));
+        //System.out.println(Arrays.toString(lines));
 
         for (int i = 0; i<lines.length; i++) {
             String[] line;
@@ -52,11 +54,12 @@ public class Assembler {
                 boolean hex = false;
                 name = line[2];
                 chars = line[3].split("(?!^)");
-                if (Objects.equals(chars[0], "0") && Objects.equals(chars[1], "x")) {
-                    hex = true;
-                    val = line[3].substring(2);
+                if (chars.length>2) {
+                    if (Objects.equals(chars[0], "0") && Objects.equals(chars[1], "x")) {
+                        hex = true;
+                        val = line[3].substring(2);
+                    }
                 }
-
                 if (hex) {
                     val2 = Integer.parseInt(val,16);
                 } else {
@@ -66,6 +69,7 @@ public class Assembler {
                 //System.out.println(name+" - "+val2+" - "+address+" - "+Short.parseShort(line[1]));
 
                 vars[varIdx] = new As_var(name,val2,0, (byte) Short.parseShort(line[1]));
+                varsMap.put(name,vars[varIdx]);
                 varIdx ++;
             } else if (func) { //function
                 String functionName = line[0].replace("<","").replace(">","");
@@ -77,15 +81,20 @@ public class Assembler {
                 String[] vals = new String[6];
                 if (line.length>6) {
                     vals[5] = line[6];
-                } else if (line.length>5) {
+                }
+                if (line.length>5) {
                     vals[4] = line[5];
-                } else if (line.length>4) {
+                }
+                if (line.length>4) {
                     vals[3] = line[4];
-                } else if (line.length>3) {
+                }
+                if (line.length>3) {
                     vals[2] = line[3];
-                } else if (line.length>2) {
+                }
+                if (line.length>2) {
                     vals[1] = line[2];
-                } else if (line.length>1) {
+                }
+                if (line.length>1) {
                     vals[0] = line[1];
                 }
                 instructions[instructionIdx] = new As_instruction(line[0],bytesInst,vals,4096+bytes,i);
@@ -124,14 +133,13 @@ public class Assembler {
         }
         //write instruction to memory
         for (int i = 0; i<instructionIdx; i++) {
-            int instructionAddress = instructions[i].address;
             byte instructionBytes = instructions[i].bytes;
             String iname = instructions[i].name.toUpperCase();
             int opCode = opcodes.names.get(iname);
 
-
             Memory.store(instructions[i].address, (short) opCode);
 
+            //-------------------------------------------------------------------
             if (iname.equals("STAIP")) {
                 short[] values;
                 if (Functions.isNumeric(instructions[i].values[0])) {
@@ -142,25 +150,82 @@ public class Assembler {
                 Memory.store(instructions[i].address+1, values[0]);
                 Memory.store(instructions[i].address+2, values[1]);
                 Memory.store(instructions[i].address+3, values[2]);
+                //-------------------------------------------------------------------
+            } else if (iname.equals("INT")) {
+                Memory.store(instructions[i].address+1, Short.parseShort(instructions[i].values[0]));
+                //-------------------------------------------------------------------
             } else if (iname.equals("LDI1") || iname.equals("LDI2") || iname.equals("LDI3") || iname.equals("ADDI1") ||
                     iname.equals("ADDI2") || iname.equals("ADDI3") || iname.equals("MULI1") || iname.equals("DIVI1") ||
                     iname.equals("SUBI1") || iname.equals("SUBI2") || iname.equals("SUBI3")) {
-
+                Memory.store(instructions[i].address+1, Short.parseShort(removeRfromCode(instructions[i].values[0])));
+                if (iname.equals("LDI2") || iname.equals("ADDI2") || iname.equals("SUBI2")) {
+                    short[] values = Functions.convertFrom16Bit(Integer.parseInt(instructions[i].values[1]));
+                    Memory.store(instructions[i].address+2, values[0]);
+                    Memory.store(instructions[i].address+3, values[1]);
+                } else if (iname.equals("LDI3") || iname.equals("ADDI3") || iname.equals("SUBI3")) {
+                    short[] values = Functions.convertFrom24Bit(Integer.parseInt(instructions[i].values[1]));
+                    Memory.store(instructions[i].address+2, values[0]);
+                    Memory.store(instructions[i].address+3, values[1]);
+                    Memory.store(instructions[i].address+4, values[2]);
+                } else {
+                    Memory.store(instructions[i].address+2, Short.parseShort(instructions[i].values[1]));
+                }
+                //-------------------------------------------------------------------
             } else if (iname.equals("LDR1") || iname.equals("LDR2") || iname.equals("LDR3") ||
                     iname.equals("STR1") || iname.equals("STR2") || iname.equals("STR3")) {
-
+                Memory.store(instructions[i].address+1, Short.parseShort(removeRfromCode(instructions[i].values[0])));
+                Memory.store(instructions[i].address+2, Short.parseShort(removeRfromCode(instructions[i].values[2])));
+                //-------------------------------------------------------------------
             } else {
-                
+                for(int j = 0; j < instructions[i].values.length; j++) {
+                    int k = j+1; //1
+                    if (instructions[i].values[j] != null) {
+                        if (findRinCode(instructions[i].values[j])) {
+                            //REGISTER
+                            Memory.store(instructions[i].address+k, Short.parseShort(removeRfromCode(instructions[i].values[j])));
+                        }  else if (Functions.isNumeric(instructions[i].values[j])) {
+                            //????
+                            Memory.store(instructions[i].address+1, Short.parseShort(instructions[i].values[0]));
+                        } else if (!(iname.equals("JSR") || iname.equals("JG") || iname.equals("JNG") || iname.equals("JL") || iname.equals("JNL")
+                                || iname.equals("JC") || iname.equals("JNC") || iname.equals("JE") || iname.equals("JNE") || iname.equals("JMP"))) {
+                            //VAR MEM ADDRESS
+                            short[] varAddress = Functions.convertFrom24Bit(varsMap.get(instructions[i].values[j]).address);
+                            Memory.store(instructions[i].address+k, varAddress[0]);
+                            Memory.store(instructions[i].address+k+1, varAddress[1]);
+                            Memory.store(instructions[i].address+k+2, varAddress[2]);
+                        } else {
+                            //FUNCTIONS (JUMPS)
+                            short[] jumpAddress = Functions.convertFrom24Bit(functionsMap.get(instructions[i].values[j]).address);
+                            Memory.store(instructions[i].address+k, jumpAddress[0]);
+                            Memory.store(instructions[i].address+k+1, jumpAddress[1]);
+                            Memory.store(instructions[i].address+k+2, jumpAddress[2]);
+                        }
+                    } else {
+                        break;
+                    }
+                }
             }
-
-
         }
 
+        /*for (int i = 0; i<instructionIdx;i++) {
+            System.out.println(instructions[i].name+" - "+instructions[i].values[0]+" - "+instructions[i].values[1]+" - "+instructions[i].values[2]);
+        }*/
 
+        int a = 0;
+        int b = 0;
+        while(a<256) {
+            System.out.print(Memory.data[4096+a]+" ");
+            a++;
+            b++;
+            if (b>16) {
+                b = 0;
+                System.out.println("");
+            }
+        }
     }
 
     public static String removeRfromCode(String string) {
-        boolean found = string.matches("\\b([R-R-r-r][0-9])");
+        boolean found = string.matches("\\b([R-R-r-r][0-9]{1,2})");
         if (found) {
             return string.substring(1);
         }
@@ -168,7 +233,7 @@ public class Assembler {
     }
 
     public static boolean findRinCode(String string) {
-        return string.matches("\\b([R-R-r-r][0-9])");
+        return string.matches("\\b([R-R-r-r][0-9]{1,2})");
     }
 
 
@@ -176,10 +241,10 @@ public class Assembler {
     public static void loadMachineCode(String code) {
         Memory.init();
         String[] bytes;
-        Short[] bytes2 = new Short[262144];
+        Short[] bytes2 = new Short[4194304];
         code = code.replace("\n","");
         bytes = code.split(" ");
-        System.out.println(Arrays.toString(bytes));
+        //System.out.println(Arrays.toString(bytes));
         for (int i = 0; i<bytes.length; i++) {
             bytes2[i] = Short.parseShort(bytes[i], 16);
             Memory.store(i+4096, bytes2[i]);

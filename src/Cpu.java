@@ -92,6 +92,7 @@ public class Cpu extends Thread {
     byte memThisCycleLeft = 3;
     short[] instructionData = new short[6];
     byte instructionDataIdx = 0;
+    boolean fetchedOpCode = false;
 
     public void main() {
         if (!running) {
@@ -99,6 +100,7 @@ public class Cpu extends Thread {
         };
         cyclesDone++;
         memThisCycleLeft = 3;
+        fetchedOpCode = false;
 
         timeA = System.currentTimeMillis();
         if (timeA-timeB>1000) {
@@ -147,7 +149,7 @@ public class Cpu extends Thread {
         instructionData[0] = val;
 
         debugPrint(programCounter+": "+val,false);
-
+        fetchedOpCode = true;
         programCounter ++;
         cpuPhase++;
         if (bytes==1 && cyclesI == 0) {
@@ -170,7 +172,9 @@ public class Cpu extends Thread {
             programCounter ++;
             bytesLeft--;
         }
-        cyclesI--;
+        if (!fetchedOpCode) {
+            cyclesI--;
+        }
         if (bytesLeft<=0) {
             debugPrint("",true);
             cpuPhase++;
@@ -216,6 +220,9 @@ public class Cpu extends Thread {
                 val = registers[instructionData[1]] - registers[instructionData[2]];
                 setFlags(val);
                 registers[instructionData[3]] = val;
+                if (flagCarry) {
+                    registers[instructionData[3]] += 16777216;
+                }
                 break;
             case 3: //LD1
                 registers[instructionData[1]] = Memory.load(Functions.convertTo24Bit(instructionData[2],instructionData[3],instructionData[4]));
@@ -261,10 +268,16 @@ public class Cpu extends Thread {
             case 12: //INC
                 registers[instructionData[1]]++;
                 setFlags(registers[instructionData[1]]);
+                if (flagCarry) {
+                    registers[instructionData[1]] -= 16777216;
+                }
                 break;
             case 13: //DEC
                 registers[instructionData[1]]--;
                 setFlags(registers[instructionData[1]]);
+                if (flagCarry) {
+                    registers[instructionData[1]] += 16777216;
+                }
                 break;
             case 14: //MUL
                 val = registers[instructionData[1]] * registers[instructionData[2]];
@@ -296,7 +309,15 @@ public class Cpu extends Thread {
                 registers[instructionData[3]] = val;
                 break;
             case 18: //SUC
-                //TODO:
+                val = registers[instructionData[1]] - registers[instructionData[2]];
+                if (flagCarry) {
+                    val --;
+                }
+                setFlags(val);
+                registers[instructionData[3]] = val;
+                if (flagCarry) {
+                    registers[instructionData[3]] += 16777216;
+                }
                 break;
             case 19: //NOP
                 break;
@@ -410,6 +431,9 @@ public class Cpu extends Thread {
                 val = registers[instructionData[1]] - registers[instructionData[2]];
                 setFlags(val);
                 registers[instructionData[1]] = val;
+                if (flagCarry) {
+                    registers[instructionData[1]] += 16777216;
+                }
                 break;
             case 42: //ADDI1
                 val = registers[instructionData[1]] + instructionData[2];
@@ -423,6 +447,9 @@ public class Cpu extends Thread {
                 val = registers[instructionData[1]] - instructionData[2];
                 setFlags(val);
                 registers[instructionData[1]] = val;
+                if (flagCarry) {
+                    registers[instructionData[1]] += 16777216;
+                }
                 break;
             case 44: //MULI1
                 val = registers[instructionData[1]] * instructionData[2];
@@ -449,6 +476,9 @@ public class Cpu extends Thread {
                 val = registers[instructionData[1]] - Functions.convertTo16Bit(instructionData[2],instructionData[3]);
                 setFlags(val);
                 registers[instructionData[1]] = val;
+                if (flagCarry) {
+                    registers[instructionData[1]] += 16777216;
+                }
                 break;
             case 48: //ADDI3
                 val = registers[instructionData[1]] + Functions.convertTo24Bit(instructionData[2],instructionData[3],instructionData[4]);
@@ -462,6 +492,9 @@ public class Cpu extends Thread {
                 val = registers[instructionData[1]] - Functions.convertTo24Bit(instructionData[2],instructionData[3],instructionData[4]);
                 setFlags(val);
                 registers[instructionData[1]] = val;
+                if (flagCarry) {
+                    registers[instructionData[1]] += 16777216;
+                }
                 break;
             case 50: //STAIP
                 interruptPointers[instructionData[1]] = Functions.convertTo24Bit(instructionData[2],instructionData[3],instructionData[4]);
@@ -738,7 +771,8 @@ public class Cpu extends Thread {
         }
         if (val<0) {
             flagSign = true;
-            debugPrint("SIGN",true);
+            flagCarry = true; //TODO:?????
+            debugPrint("SIGN+CARRY",true);
         }
         if (val>16777215) {
             flagCarry = true;

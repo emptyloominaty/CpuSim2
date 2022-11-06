@@ -248,7 +248,6 @@ public class Memory {
 
         store(6000, (short) 10);
         store(6001, (short) 10);
-
         store(6004, (short) 2);
         store(6005, (short) 25);
     }
