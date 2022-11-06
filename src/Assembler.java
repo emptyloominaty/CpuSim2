@@ -174,7 +174,7 @@ public class Assembler {
             } else if (iname.equals("LDR1") || iname.equals("LDR2") || iname.equals("LDR3") ||
                     iname.equals("STR1") || iname.equals("STR2") || iname.equals("STR3")) {
                 Memory.store(instructions[i].address+1, Short.parseShort(removeRfromCode(instructions[i].values[0])));
-                Memory.store(instructions[i].address+2, Short.parseShort(removeRfromCode(instructions[i].values[2])));
+                Memory.store(instructions[i].address+2, Short.parseShort(removeRfromCode(instructions[i].values[1])));
                 //-------------------------------------------------------------------
             } else {
                 for(int j = 0; j < instructions[i].values.length; j++) {

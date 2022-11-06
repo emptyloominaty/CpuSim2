@@ -56,8 +56,30 @@ public class Memory {
             dataCanStore[i] = true;
         }
 
+        //VRAM SET
+        //color 1B (1/2/3 8/16/24-bit)
+        store(0xA00000, (short) 1);
+        //width 2B
+        store(0xA00001, (short) 2);
+        store(0xA00002, (short) 128);
+        //height 2B
+        store(0xA00003, (short) 1);
+        store(0xA00004, (short) 224);
+        //frameBufferStart 3B
+        store(0xA00005, (short) 0x0A);
+        store(0xA00006, (short) 0x00);
+        store(0xA00007, (short) 0x0A);
+        //frameDrawing 1B (0/1) TODO:?
+        store(0xA00008, (short) 0);
+        //frameFinished 1B (0/1) TODO:?
+        store(0xA00009, (short) 1);
 
-        //realMemoryUsage();
+        //TEST
+        store(0xA0100B, (short) 1);
+        store(0xA0104A, (short) 1);
+        store(0xA0150A, (short) 1);
+        store(0xA0101A, (short) 1);
+        store(0xA0102A, (short) 1);
     }
 
     public static void loadTestProgram() {

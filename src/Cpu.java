@@ -108,7 +108,7 @@ public class Cpu extends Thread {
             timeB = System.currentTimeMillis();
             cyclesDoneB = cyclesDone;
         }
-        if (timeA-timeC>16.66) {
+        if (timeA-timeC>33.333333333333333333333333333333) {
             frame.update(this);
             timeC = System.currentTimeMillis();
             timeEnd = timeC;

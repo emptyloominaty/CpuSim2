@@ -13,9 +13,12 @@ public class Frame implements ActionListener {
     JButton buttonLoadUS;
     JButton buttonMemory;
     JButton buttonScreen;
+    JButton buttonTest;
     JTextArea memText;
     Cpu cpu;
     Op opCodes;
+    Screen screen;
+    ScreenFrame screenFrame;
     boolean cpuStarted = false;
     boolean firstStart = true;
 
@@ -30,10 +33,12 @@ public class Frame implements ActionListener {
     JLabel labelSP = new JLabel();
     JLabel labelPC = new JLabel();
 
-    public void main(Cpu cpu,Op opCodes) {
+    public void main(Cpu cpu,Op opCodes, Screen screen, ScreenFrame screenFrame) {
         dfs.setGroupingSeparator(' ');
         this.cpu = cpu;
         this.opCodes = opCodes;
+        this.screen = screen;
+        this.screenFrame = screenFrame;
 
         JPanel panel1 =  new JPanel();
         panel1.setBackground(new Color(60, 60, 60));
@@ -170,6 +175,15 @@ public class Frame implements ActionListener {
         buttonScreen.setBackground(new Color(60,60,60));
         buttonScreen.setBorder(BorderFactory.createStrokeBorder(new BasicStroke(1.5f)));
 
+        buttonTest = new JButton();
+        buttonTest.addActionListener(this);
+        buttonTest.setText("Test");
+        buttonTest.setFocusable(false);
+        buttonTest.setFont(new Font(fontName,Font.PLAIN,fontSize1));
+        buttonTest.setForeground(new Color(220,220,220));
+        buttonTest.setBackground(new Color(60,60,60));
+        buttonTest.setBorder(BorderFactory.createStrokeBorder(new BasicStroke(1.5f)));
+
         //Panel1
         panel1.setLayout(new GridLayout(16,1));
         for (int i = 0; i<labelTexts.length; i++) {
@@ -188,6 +202,7 @@ public class Frame implements ActionListener {
         panelBottom.add(buttonLoadUS);
         panelBottom.add(buttonMemory);
         panelBottom.add(buttonScreen);
+        panelBottom.add(buttonTest);
 
         //Panel2
         panel1.setBorder(new EmptyBorder(10, 5, 10, 5));
@@ -213,6 +228,7 @@ public class Frame implements ActionListener {
         labelTexts[2].setText("Cycles Done: "+df.format(cpu.cyclesDone));
         labelTexts[3].setText("Instructions Done: "+df.format(cpu.instructionsDone));
         labelTexts[4].setText("IPC: "+ (double) Math.round(((double) cpu.instructionsDone/cpu.cyclesDone)*100)/100);
+        screen.updateS();
     }
 
     public String getClock(long clock) {
@@ -258,7 +274,9 @@ public class Frame implements ActionListener {
         } else if (e.getSource()==buttonMemory) {
             MemoryFrame.main();
         } else if (e.getSource()==buttonScreen) {
-            Screen.main();
+            screenFrame.main();
+        } else if (e.getSource()==buttonTest) {
+            System.out.println("TEST");
         }
 
     }
