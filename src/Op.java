@@ -165,7 +165,7 @@ public class Op {
         names.put("JC", 29);
 
         names.put("JNC", 30);
-        names.put("PHS1", 31);
+        names.put("PSH1", 31);
         names.put("POP1", 32);
         names.put("TRR", 33);
         names.put("TRP", 34);
@@ -292,7 +292,7 @@ public class Op {
         names2[29] = "JC"; //JC (Carry)
 
         names2[30] = "JNC"; //JNC (Not Carry)
-        names2[31] = "PHS1"; //PSH1
+        names2[31] = "PSH1"; //PSH1
         names2[32] = "POP1"; //POP1
         names2[33] = "TRR"; //TRR (Register to Register)
         names2[34] = "TRP"; //TRP (Register to Program Counter)

@@ -73,13 +73,6 @@ public class Memory {
         store(0xA00008, (short) 0);
         //frameFinished 1B (0/1) TODO:?
         store(0xA00009, (short) 1);
-
-        //TEST
-        store(0xA0100B, (short) 1);
-        store(0xA0104A, (short) 1);
-        store(0xA0150A, (short) 1);
-        store(0xA0101A, (short) 1);
-        store(0xA0102A, (short) 1);
     }
 
     public static void loadTestProgram() {

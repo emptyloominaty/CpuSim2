@@ -194,7 +194,6 @@ public class Cpu extends Thread {
         }
     }
 
-
     public void execute() {
         instructionsDone++;
         short[] store;
@@ -288,12 +287,20 @@ public class Cpu extends Thread {
                 registers[instructionData[3]] = val;
                 break;
             case 15: //DIV
-                val = registers[instructionData[1]] / registers[instructionData[2]];
+                if (registers[instructionData[2]]!=0) {
+                    val = registers[instructionData[1]] / registers[instructionData[2]];
+                } else {
+                    val = 0;
+                }
                 setFlags(val);
                 registers[instructionData[3]] = val;
                 break;
             case 16: //DIVR
-                val = registers[instructionData[1]] % registers[instructionData[2]];
+                if (registers[instructionData[2]]!=0) {
+                    val = registers[instructionData[1]] % registers[instructionData[2]];
+                } else {
+                    val = 0;
+                }
                 setFlags(val);
                 registers[instructionData[3]] = val;
                 break;
@@ -460,7 +467,11 @@ public class Cpu extends Thread {
                 registers[instructionData[1]] = val;
                 break;
             case 45: //DIVI1
-                val = registers[instructionData[1]] / instructionData[2];
+                if (registers[instructionData[2]]!=0) {
+                    val = registers[instructionData[1]] / instructionData[2];
+                } else {
+                    val = 0;
+                }
                 setFlags(val);
                 registers[instructionData[1]] = val;
                 break;

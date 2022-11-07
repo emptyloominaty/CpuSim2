@@ -12,15 +12,22 @@ public class Screen extends JPanel implements ActionListener {
     boolean test = false;
     Timer timer;
 
+    byte scaling = 2;
+
+    short prevColor = 0;
+    int rr = 0;
+    int gg = 0;
+    int bb = 0;
+
     Screen() {
         timer = new Timer(1000/20, this);
         timer.start();
     }
-    
+
     public void paint(Graphics g) {
         //Graphics2D graphic2d = (Graphics2D) g;
         g.setColor(Color.GRAY);
-        g.fillRect(0, 0, 1280, 720);
+        g.fillRect(0, 0, 1600, 1200);
 
         /*if (test) {
             g.setColor(new Color(255,255,255));
@@ -32,16 +39,24 @@ public class Screen extends JPanel implements ActionListener {
             test = true;
         }*/
 
+        short height2 = (short) (height*scaling);
+        short width2 = (short) (width*scaling);
+
         int addr = frameBufferStart;
-        for (int y = 0; y<height; y++) {
-            for (int x = 0; x<width; x++) {
-                //TODO:COLORS
-                if (Memory.load(addr)==1) {
-                    g.setColor(new Color(255,255,255));
-                } else {
-                    g.setColor(new Color(0, 0, 0));
+        for (int y = 0; y<height2; y+=scaling) {
+            for (int x = 0; x<width2; x+=scaling) {
+                short colorVal = Memory.load(addr);
+                if (prevColor!=colorVal) {
+                    prevColor = colorVal;
+                    int red = ((colorVal & 0xE0) >> 5);
+                    int green = ((colorVal & 0x1C) >> 2);
+                    int blue = (colorVal & 0x03);
+                    rr = red*36;
+                    gg = green*36;
+                    bb = blue*85;
                 }
-                g.fillRect(x, y, 1, 1);
+                g.setColor(new Color(rr,gg,bb));
+                g.fillRect(x, y, scaling, scaling);
                 addr++;
             }
         }
