@@ -5,52 +5,52 @@ public class Memory {
     static boolean[] dataCanUse = new boolean[16777216]; //16777216
     static boolean[] dataCanStore = new boolean[16777216]; //16777216
     //memory config
-    static int ramEnd = 65535;
+    static int ramEnd = 0x00FFFF;
 
-    static int extendedRamStart = 65536;
-    static int extendedRamEnd = 4259839;
+    static int extendedRamStart = 0x010000;
+    static int extendedRamEnd = 0x40FFFF;
 
-    static int vramStart = 10485760;
-    static int vramEnd = 11010047;
+    static int vramStart = 0xA00000;
+    static int vramEnd = 0xAFFFFF;
 
-    static int romStart = 11534336;
-    static int romEnd = 12582911;
+    static int romStart = 0x500000;
+    static int romEnd = 0x8FFFFF;
 
-    static int ursStart = 12582912;
-    static int ursEnd = 13631487;
+    static int ursStart = 0x900000;
+    static int ursEnd = 0x9FFFFF;
 
-    static int ioStart = 16711680;
-    static int ioEnd = 16711807;
+    static int ioStart = 0xFF0000;
+    static int ioEnd = 0xFF17F8;
 
     static public void init() {
         data = new short[16777216];
 
-        //main ram 0-65535
+        //main ram
         for (int i = 0; i <= ramEnd; i++) {
             dataCanUse[i] = true;
             dataCanStore[i] = true;
         }
-        //extended ram 65536 - 4259839
+        //extended ram
         for (int i = extendedRamStart; i <= extendedRamEnd; i++) {
             dataCanUse[i] = true;
             dataCanStore[i] = true;
         }
-        //vram 10485760 - 11010047
+        //vram
         for (int i = vramStart; i <= vramEnd; i++) {
             dataCanUse[i] = true;
             dataCanStore[i] = true;
         }
-        //rom 11534336 - 12582911
+        //rom
         for (int i = romStart; i <= romEnd; i++) {
             dataCanUse[i] = true;
             dataCanStore[i] = false;
         }
-        //user removable storage 12582912 - 13631487
+        //user removable storage
         for (int i = ursStart; i <= ursEnd; i++) {
             dataCanUse[i] = true;
             dataCanStore[i] = true;
         }
-        //I/O 16711680 - 16711807
+        //I/O
         for (int i = ioStart; i <= ioEnd; i++) {
             dataCanUse[i] = true;
             dataCanStore[i] = true;

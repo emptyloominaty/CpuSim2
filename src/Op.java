@@ -62,7 +62,7 @@ public class Op {
         codes[48] = new byte[]{5, 4}; //ADDI3
         codes[49] = new byte[]{5, 4}; //SUBI3
 
-        codes[50] = new byte[]{5, 3}; //STAIP (Store Address to Interrupt Pointer)
+        codes[50] = new byte[]{5, 4}; //STAIP (Store Address to Interrupt Pointer)
         codes[51] = new byte[]{1, 2}; //SEI (Enable Interrupts)
         codes[52] = new byte[]{1, 2}; //SDI (Disable Interrupts)
         codes[53] = new byte[]{2, 5}; //INT (Software Interrupt) (pc,fl)
