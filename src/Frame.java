@@ -194,6 +194,8 @@ public class Frame implements ActionListener {
         labelTexts[2].setText("Cycles Done: "+cpu.cyclesDone);
         labelTexts[3].setText("Instructions Done: "+cpu.instructionsDone);
         labelTexts[4].setText("IPC: "+ (double) Math.round(((double) cpu.instructionsDone/cpu.cyclesDone)*100)/100);
+        labelTexts[9].setText(""+opCodes.names2[cpu.op]+"");
+        labelTexts[10].setText(cpu.op+"");
 
 
         panelBottom.add(buttonStartCpu);
@@ -228,6 +230,9 @@ public class Frame implements ActionListener {
         labelTexts[2].setText("Cycles Done: "+df.format(cpu.cyclesDone));
         labelTexts[3].setText("Instructions Done: "+df.format(cpu.instructionsDone));
         labelTexts[4].setText("IPC: "+ (double) Math.round(((double) cpu.instructionsDone/cpu.cyclesDone)*100)/100);
+        labelTexts[9].setText(opCodes.names2[cpu.op]);
+        labelTexts[10].setText(String.format("%02X",cpu.op)+" "+String.format("%02X",cpu.instructionData[1])+" "+String.format("%02X",cpu.instructionData[2])+" "+String.format("%02X",cpu.instructionData[3])+" "+String.format("%02X",cpu.instructionData[4])+" "+String.format("%02X",cpu.instructionData[5]));
+
         screen.updateS();
     }
 

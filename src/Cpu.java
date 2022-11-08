@@ -7,16 +7,34 @@ public class Cpu extends Thread {
     long timeB = System.currentTimeMillis();
     long timeC = System.currentTimeMillis();
     long cyclesDoneB = 0;
+    //short[] prevInstruction = new short[6];
 
     boolean threadRunning = true;
 
     Op opCodes;
     Frame frame;
 
+    public long clockSet = 2000;
+    long timeClockA = System.nanoTime();
+    long timeClockB = System.nanoTime();
+    boolean maxClock = true;
+
     public void run() {
+        long timeClockD = 0;
+        long timeClockWait = 1000000000/clockSet;
         while(threadRunning) {
             while(running) {
-                this.main();
+                if (maxClock) {
+                    this.main();
+                } else {
+                    timeClockA = System.nanoTime();
+                    this.main();
+                    timeClockD = 0;
+                    while(timeClockD < timeClockWait) {
+                        timeClockB = System.nanoTime();
+                        timeClockD = timeClockB - timeClockA;
+                    }
+                }
             }
             try {
                 sleep(250);
@@ -138,6 +156,10 @@ public class Cpu extends Thread {
     }
 
     public void fetchOpCode() {
+        for (byte i = 0; i<instructionData.length;i++) {
+            instructionData[i] = 0;
+        }
+
         short val = loadByte();
         op = (byte) val;
         bytes = opCodes.codes[val][0];

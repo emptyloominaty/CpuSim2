@@ -127,7 +127,7 @@
 
 
 # GPU
-* Video Memory: **512**kB
+* Video Memory: **1**MB
 
     
 # Memory
