@@ -60,11 +60,11 @@ public class Memory {
         //color 1B (1/2/3 8/16/24-bit)
         store(0xA00000, (short) 1);
         //width 2B
-        store(0xA00001, (short) 2);
-        store(0xA00002, (short) 128);
+        store(0xA00001, (short) 2); //2
+        store(0xA00002, (short) 128); //128
         //height 2B
-        store(0xA00003, (short) 1);
-        store(0xA00004, (short) 224);
+        store(0xA00003, (short) 1); //1
+        store(0xA00004, (short) 224); //224
         //frameBufferStart 3B
         store(0xA00005, (short) 0x0A);
         store(0xA00006, (short) 0x00);

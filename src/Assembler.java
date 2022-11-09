@@ -142,14 +142,33 @@ public class Assembler {
             //-------------------------------------------------------------------
             if (iname.equals("STAIP")) {
                 short[] values;
-                if (Functions.isNumeric(instructions[i].values[0])) {
-                    values = Functions.convertFrom24Bit(Integer.parseInt(instructions[i].values[0]));
-                } else {
-                    values = Functions.convertFrom24Bit(functionsMap.get(instructions[i].values[0]).address);
+
+                String val = instructions[i].values[1];
+                int val2 = 0;
+                String[] chars;
+                boolean hex = false;
+                chars = instructions[i].values[1].split("(?!^)");
+                if (chars.length>2) {
+                    if (Objects.equals(chars[0], "0") && Objects.equals(chars[1], "x")) {
+                        hex = true;
+                        val = instructions[i].values[1].substring(2);
+                    }
                 }
-                Memory.store(instructions[i].address+1, values[0]);
-                Memory.store(instructions[i].address+2, values[1]);
-                Memory.store(instructions[i].address+3, values[2]);
+                if (hex) {
+                    val2 = Integer.parseInt(val,16);
+                } else if (Functions.isNumeric(instructions[i].values[1])) {
+                    val2 = Integer.parseInt(val);
+                }
+
+                Memory.store(instructions[i].address+1, Short.parseShort(instructions[i].values[0]));
+                if (Functions.isNumeric(instructions[i].values[1]) || hex) {
+                    values = Functions.convertFrom24Bit(val2);
+                } else {
+                    values = Functions.convertFrom24Bit(functionsMap.get(instructions[i].values[1]).address);
+                }
+                Memory.store(instructions[i].address+2, values[0]);
+                Memory.store(instructions[i].address+3, values[1]);
+                Memory.store(instructions[i].address+4, values[2]);
                 //-------------------------------------------------------------------
             } else if (iname.equals("INT")) {
                 Memory.store(instructions[i].address+1, Short.parseShort(instructions[i].values[0]));

@@ -14,6 +14,9 @@ public class Frame implements ActionListener {
     JButton buttonMemory;
     JButton buttonScreen;
     JButton buttonTest;
+    JButton buttonTest2;
+    JButton buttonCpuDebug;
+    JTextField inputClock;
     JTextArea memText;
     Cpu cpu;
     Op opCodes;
@@ -175,14 +178,42 @@ public class Frame implements ActionListener {
         buttonScreen.setBackground(new Color(60,60,60));
         buttonScreen.setBorder(BorderFactory.createStrokeBorder(new BasicStroke(1.5f)));
 
+
+        buttonCpuDebug = new JButton();
+        buttonCpuDebug.addActionListener(this);
+        buttonCpuDebug.setText("Debug: False");
+        buttonCpuDebug.setFocusable(false);
+        buttonCpuDebug.setFont(new Font(fontName,Font.PLAIN,fontSize1));
+        buttonCpuDebug.setForeground(new Color(220,220,220));
+        buttonCpuDebug.setBackground(new Color(60,60,60));
+        buttonCpuDebug.setBorder(BorderFactory.createStrokeBorder(new BasicStroke(1.5f)));
+
         buttonTest = new JButton();
         buttonTest.addActionListener(this);
-        buttonTest.setText("Test");
+        buttonTest.setText("INT 30");
         buttonTest.setFocusable(false);
         buttonTest.setFont(new Font(fontName,Font.PLAIN,fontSize1));
         buttonTest.setForeground(new Color(220,220,220));
         buttonTest.setBackground(new Color(60,60,60));
         buttonTest.setBorder(BorderFactory.createStrokeBorder(new BasicStroke(1.5f)));
+
+        buttonTest2 = new JButton();
+        buttonTest2.addActionListener(this);
+        buttonTest2.setText("INT 31");
+        buttonTest2.setFocusable(false);
+        buttonTest2.setFont(new Font(fontName,Font.PLAIN,fontSize1));
+        buttonTest2.setForeground(new Color(220,220,220));
+        buttonTest2.setBackground(new Color(60,60,60));
+        buttonTest2.setBorder(BorderFactory.createStrokeBorder(new BasicStroke(1.5f)));
+
+
+        inputClock = new JTextField();
+        inputClock.setPreferredSize(new Dimension(200,35));
+        inputClock.setFont(new Font(fontName,Font.PLAIN,fontSize1));
+        inputClock.setForeground(new Color(220,220,220));
+        inputClock.setBackground(new Color(60,60,60));
+        inputClock.setCaretColor(new Color(220,220,220));
+        inputClock.setText("MAX");
 
         //Panel1
         panel1.setLayout(new GridLayout(16,1));
@@ -197,7 +228,7 @@ public class Frame implements ActionListener {
         labelTexts[9].setText(""+opCodes.names2[cpu.op]+"");
         labelTexts[10].setText(cpu.op+"");
 
-
+        panelBottom.add(inputClock);
         panelBottom.add(buttonStartCpu);
         panelBottom.add(buttonLoad);
         panelBottom.add(buttonLoadMC);
@@ -205,6 +236,8 @@ public class Frame implements ActionListener {
         panelBottom.add(buttonMemory);
         panelBottom.add(buttonScreen);
         panelBottom.add(buttonTest);
+        panelBottom.add(buttonTest2);
+        panelBottom.add(buttonCpuDebug);
 
         //Panel2
         panel1.setBorder(new EmptyBorder(10, 5, 10, 5));
@@ -232,7 +265,6 @@ public class Frame implements ActionListener {
         labelTexts[4].setText("IPC: "+ (double) Math.round(((double) cpu.instructionsDone/cpu.cyclesDone)*100)/100);
         labelTexts[9].setText(opCodes.names2[cpu.op]);
         labelTexts[10].setText(String.format("%02X",cpu.op)+" "+String.format("%02X",cpu.instructionData[1])+" "+String.format("%02X",cpu.instructionData[2])+" "+String.format("%02X",cpu.instructionData[3])+" "+String.format("%02X",cpu.instructionData[4])+" "+String.format("%02X",cpu.instructionData[5]));
-
         screen.updateS();
     }
 
@@ -249,6 +281,12 @@ public class Frame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource()==buttonStartCpu) {
+            if (inputClock.getText()=="MAX" || !Functions.isNumeric(inputClock.getText())) {
+                cpu.maxClock = true;
+            } else {
+                cpu.maxClock = false;
+                cpu.clockSet = Long.parseLong(inputClock.getText());
+            }
             if (cpuStarted) {
                 buttonStartCpu.setText("Start");
                 System.out.println("STOPPED");
@@ -281,7 +319,18 @@ public class Frame implements ActionListener {
         } else if (e.getSource()==buttonScreen) {
             screenFrame.main();
         } else if (e.getSource()==buttonTest) {
-            System.out.println("TEST");
+            cpu.interrupt((byte) 30);
+        } else if (e.getSource()==buttonTest2) {
+            cpu.interrupt((byte) 31);
+        } else if (e.getSource()==buttonCpuDebug) {
+            if (cpu.debug) {
+                buttonCpuDebug.setText("Debug: False");
+                cpu.debug = false;
+            } else {
+                buttonCpuDebug.setText("Debug: True");
+                cpu.debug = true;
+            }
+
         }
 
     }

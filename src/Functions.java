@@ -42,5 +42,9 @@ public class Functions {
         }
     }
 
+    public static int hexToDec(String str) {
+        return Integer.parseInt(str,16);
+    }
+
 
 }

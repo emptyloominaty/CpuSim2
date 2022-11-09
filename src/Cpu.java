@@ -14,15 +14,15 @@ public class Cpu extends Thread {
     Op opCodes;
     Frame frame;
 
-    public long clockSet = 2000;
+    public long clockSet = 2000000;
     long timeClockA = System.nanoTime();
     long timeClockB = System.nanoTime();
     boolean maxClock = true;
 
     public void run() {
         long timeClockD = 0;
-        long timeClockWait = 1000000000/clockSet;
         while(threadRunning) {
+            long timeClockWait = 1000000000/clockSet;
             while(running) {
                 if (maxClock) {
                     this.main();
@@ -62,6 +62,8 @@ public class Cpu extends Thread {
         timeC = System.currentTimeMillis();
         cyclesDoneB = 0;
         timeStart = System.currentTimeMillis();
+        waitCycles = 0;
+        interruptHw = false;
     }
 
     public void sendFrame(Frame frame) {
@@ -111,6 +113,9 @@ public class Cpu extends Thread {
     short[] instructionData = new short[6];
     byte instructionDataIdx = 0;
     boolean fetchedOpCode = false;
+    int waitCycles = 0;
+    boolean interruptHw = false;
+    int interruptId = 0;
 
     public void main() {
         if (!running) {
@@ -134,6 +139,19 @@ public class Cpu extends Thread {
 
         switch(cpuPhase) {
             case 0:
+                if (waitCycles>0) {
+                    waitCycles--;
+                    return;
+                }
+                if (interruptHw) {
+                    interruptHw = false;
+                    op = 53;
+                    instructionData[0] = 53;
+                    instructionData[1] = (short) interruptId;
+                    cpuPhase = 2;
+                    cyclesI = 0;
+                    break;
+                }
                 //fetch opcode
                 fetchOpCode();
                 break;
@@ -781,6 +799,14 @@ public class Cpu extends Thread {
                 break;
         }
         cpuPhase = 0;
+    }
+
+    public void interrupt(byte id) {
+        if (!flagInterruptDisable) {
+            interruptHw = true;
+            interruptId = id;
+            waitCycles = 4;
+        }
     }
 
     public short loadByte() {
