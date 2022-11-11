@@ -8,6 +8,27 @@ import java.util.Map;
 import java.util.Objects;
 
 public class Assembler {
+
+    public static int checkHex(String valIn) {
+        String val = valIn;
+        int val2 = 0;
+        String[] chars;
+        boolean hex = false;
+        chars = valIn.split("(?!^)");
+        if (chars.length>2) {
+            if (Objects.equals(chars[0], "0") && Objects.equals(chars[1], "x")) {
+                hex = true;
+                val = valIn.substring(2);
+            }
+        }
+        if (hex) {
+            val2 = Integer.parseInt(val,16);
+        } else if (Functions.isNumeric(valIn)) {
+            val2 = Integer.parseInt(val);
+        }
+        return val2;
+    }
+
     public static void assemble(String code, Op opcodes) {
         Memory.init();
         String[] lines;
@@ -108,8 +129,6 @@ public class Assembler {
                 bytes += bytesInst;
                 instructionIdx++;
             }
-
-
         }
 
         int varsBytes = 0;
@@ -184,11 +203,11 @@ public class Assembler {
                     iname.equals("SUBI1") || iname.equals("SUBI2") || iname.equals("SUBI3")) {
                 Memory.store(instructions[i].address+1, Short.parseShort(removeRfromCode(instructions[i].values[0])));
                 if (iname.equals("LDI2") || iname.equals("ADDI2") || iname.equals("SUBI2")) {
-                    short[] values = Functions.convertFrom16Bit(Integer.parseInt(instructions[i].values[1]));
+                    short[] values = Functions.convertFrom16Bit(checkHex(instructions[i].values[1]));
                     Memory.store(instructions[i].address+2, values[0]);
                     Memory.store(instructions[i].address+3, values[1]);
                 } else if (iname.equals("LDI3") || iname.equals("ADDI3") || iname.equals("SUBI3")) {
-                    short[] values = Functions.convertFrom24Bit(Integer.parseInt(instructions[i].values[1]));
+                    short[] values = Functions.convertFrom24Bit(checkHex(instructions[i].values[1]));
                     Memory.store(instructions[i].address+2, values[0]);
                     Memory.store(instructions[i].address+3, values[1]);
                     Memory.store(instructions[i].address+4, values[2]);

@@ -6,6 +6,7 @@ public class Cpu extends Thread {
     long timeA = System.currentTimeMillis();
     long timeB = System.currentTimeMillis();
     long timeC = System.currentTimeMillis();
+    long timeD = System.currentTimeMillis();
     long cyclesDoneB = 0;
     //short[] prevInstruction = new short[6];
 
@@ -60,12 +61,15 @@ public class Cpu extends Thread {
         timeA = System.currentTimeMillis();
         timeB = System.currentTimeMillis();
         timeC = System.currentTimeMillis();
+        timeD = System.currentTimeMillis();
         cyclesDoneA = 0;
         cyclesDoneB = 0;
         timeStart = System.currentTimeMillis();
         waitCycles = 0;
         interruptHw = false;
         halted = false;
+        cyclesTotal = 0;
+        cyclesExecuting = 0;
     }
 
     public void sendFrame(Frame frame) {
@@ -108,6 +112,10 @@ public class Cpu extends Thread {
     long cyclesDone = 0;
     long cyclesDoneA = 0;
     long instructionsDone = 0;
+
+    int cyclesTotal = 0;
+    int cyclesExecuting = 0;
+
     byte cpuPhase = 0;
     byte op = 0;
     byte bytes = 0;
@@ -122,6 +130,7 @@ public class Cpu extends Thread {
     boolean interruptHw = false;
     int interruptId = 0;
 
+
     public void main() {
         if (!running) {
             return;
@@ -134,15 +143,22 @@ public class Cpu extends Thread {
             clock = (int) (cyclesDoneA-cyclesDoneB);
             timeB = System.currentTimeMillis();
             cyclesDoneB = cyclesDoneA;
+            if (timeA-timeD>5000) {
+                cyclesTotal /= 2;
+                cyclesExecuting /= 2;
+                timeD = System.currentTimeMillis();
+            }
         }
         if (timeA-timeC>33.333333333333333333333333333333) {
             frame.update(this);
             timeC = System.currentTimeMillis();
             timeEnd = timeC;
         }
+        cyclesTotal++;
         if (halted) {
             return;
         }
+        cyclesExecuting++;
         cyclesDone++;
         switch(cpuPhase) {
             case 0:

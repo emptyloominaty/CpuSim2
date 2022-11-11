@@ -71,7 +71,7 @@ public class Op {
         codes[56] = new byte[]{2, 2}; //POP2
         codes[57] = new byte[]{2, 2}; //PSH3
         codes[58] = new byte[]{2, 2}; //POP3
-        codes[59] = new byte[]{1, 1}; //HLT //TODO:!
+        codes[59] = new byte[]{1, 1}; //HLT
 
         codes[60] = new byte[]{3, 3}; //LDR1 (Load from Address stored in Register) 8bit
         codes[61] = new byte[]{3, 3}; //STR1 (Store to Address stored in Register) 8bit

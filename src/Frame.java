@@ -21,6 +21,7 @@ public class Frame implements ActionListener {
     Cpu cpu;
     Op opCodes;
     Screen screen;
+    Timers timers;
     ScreenFrame screenFrame;
     boolean cpuStarted = false;
     boolean firstStart = true;
@@ -42,6 +43,7 @@ public class Frame implements ActionListener {
         this.opCodes = opCodes;
         this.screen = screen;
         this.screenFrame = screenFrame;
+        this.timers = new Timers();
 
         JPanel panel1 =  new JPanel();
         panel1.setBackground(new Color(60, 60, 60));
@@ -263,9 +265,36 @@ public class Frame implements ActionListener {
         labelTexts[2].setText("Cycles Done: "+df.format(cpu.cyclesDone));
         labelTexts[3].setText("Instructions Done: "+df.format(cpu.instructionsDone));
         labelTexts[4].setText("IPC: "+ (double) Math.round(((double) cpu.instructionsDone/cpu.cyclesDone)*100)/100);
+
+        double cpu1p = cpu.cyclesTotal/100d;
+        if (cpu1p==0) {
+            cpu1p = 1;
+        }
+
+        double cpuUsage = Math.round(cpu.cyclesExecuting/cpu1p*10d)/10d;
+        if (cpuUsage>100) {
+            cpuUsage = 100;
+        }
+        labelTexts[5].setText("Cpu Usage: "+cpuUsage+"%");
+
+
+        if (!cpu.interruptHw) {
+            labelTexts[8].setText("");
+        } else {
+            labelTexts[8].setText("INT");
+        }
         labelTexts[9].setText(opCodes.names2[cpu.op]);
         labelTexts[10].setText(String.format("%02X",cpu.op)+" "+String.format("%02X",cpu.instructionData[1])+" "+String.format("%02X",cpu.instructionData[2])+" "+String.format("%02X",cpu.instructionData[3])+" "+String.format("%02X",cpu.instructionData[4])+" "+String.format("%02X",cpu.instructionData[5]));
         screen.updateS();
+        //0xFF0010-0xFF0011
+        //Timers
+        int timer1Val = Functions.convertTo16Bit(Memory.load(0xFF0010),Memory.load(0xFF0011));
+        if (timer1Val!=0) {
+            timers.setTimer1(timer1Val,cpu);
+        } else {
+            timers.cancelTimer1();
+        }
+
     }
 
     public String getClock(long clock) {
@@ -296,14 +325,14 @@ public class Frame implements ActionListener {
             } else {
                 buttonStartCpu.setText("Stop");
                 cpuStarted = true;
-                System.out.println("STARTED");
-                cpu.running = true;
                 if (firstStart) {
                     cpu.start();
                     firstStart = false;
                 } else {
                     cpu.resetCpu();
                 }
+                cpu.running = true;
+                System.out.println("STARTED");
                 System.out.println(cpu.getName() + " (" + cpu.getState() + ")");
             }
         } else if (e.getSource()==buttonLoad) {
