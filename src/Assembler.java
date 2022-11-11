@@ -76,7 +76,13 @@ public class Assembler {
                 functions[functionIdx] = new As_function(functionName,i,4096+bytes);
                 functionsMap.put(functionName,functions[functionIdx]);
             } else if (!line[0].equals("") && !line[0].equals(" ")) { //instruction
-                int idInst = opcodes.names.get(line[0].toUpperCase());
+                int idInst;
+                try {
+                    idInst = opcodes.names.get(line[0].toUpperCase());
+                } catch(Exception e) {
+                    System.out.println("Instruction ("+line[0].toUpperCase()+") does not exist");
+                    return;
+                }
                 byte bytesInst = opcodes.codes[idInst][0];
                 String[] vals = new String[6];
                 if (line.length>6) {

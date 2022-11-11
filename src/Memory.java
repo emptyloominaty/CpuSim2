@@ -265,9 +265,12 @@ public class Memory {
     }
 
     public static void store(int address, short value) {
+        if (address<0) {//TODO FIX
+            address = 0;
+        }
         if (value>255) { //TODO FIX
             value = 255;
-        } else if (value<0) {
+        } else if (value<0) {//TODO FIX
             value = 0;
         }
         if (dataCanUse[address] && dataCanStore[address]) {
@@ -276,6 +279,9 @@ public class Memory {
     }
 
     public static short load(int address) {
+        if (address<0) {//TODO FIX
+            address = 0;
+        }
         if (dataCanUse[address]) {
             return data[address];
         } else {

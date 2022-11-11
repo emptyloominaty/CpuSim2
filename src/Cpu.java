@@ -60,10 +60,12 @@ public class Cpu extends Thread {
         timeA = System.currentTimeMillis();
         timeB = System.currentTimeMillis();
         timeC = System.currentTimeMillis();
+        cyclesDoneA = 0;
         cyclesDoneB = 0;
         timeStart = System.currentTimeMillis();
         waitCycles = 0;
         interruptHw = false;
+        halted = false;
     }
 
     public void sendFrame(Frame frame) {
@@ -86,6 +88,8 @@ public class Cpu extends Thread {
     boolean flagOverflow = false;
     boolean flagInterruptDisable = false;
 
+    boolean halted = false;
+
     public void init() {
         registers = new int[32];
         interruptPointers = new int[32];
@@ -102,6 +106,7 @@ public class Cpu extends Thread {
 
     boolean running = true;
     long cyclesDone = 0;
+    long cyclesDoneA = 0;
     long instructionsDone = 0;
     byte cpuPhase = 0;
     byte op = 0;
@@ -121,22 +126,24 @@ public class Cpu extends Thread {
         if (!running) {
             return;
         };
-        cyclesDone++;
+        cyclesDoneA++;
         memThisCycleLeft = 3;
         fetchedOpCode = false;
-
         timeA = System.currentTimeMillis();
         if (timeA-timeB>1000) {
-            clock = (int) (cyclesDone-cyclesDoneB);
+            clock = (int) (cyclesDoneA-cyclesDoneB);
             timeB = System.currentTimeMillis();
-            cyclesDoneB = cyclesDone;
+            cyclesDoneB = cyclesDoneA;
         }
         if (timeA-timeC>33.333333333333333333333333333333) {
             frame.update(this);
             timeC = System.currentTimeMillis();
             timeEnd = timeC;
         }
-
+        if (halted) {
+            return;
+        }
+        cyclesDone++;
         switch(cpuPhase) {
             case 0:
                 if (waitCycles>0) {
@@ -643,8 +650,9 @@ public class Cpu extends Thread {
                 byte1 = Memory.load(stackPointer);
                 registers[instructionData[1]] = Functions.convertTo24Bit(byte1,byte2,byte3);
                 break;
-            case 59: //
-
+            case 59: //HLT
+                halted = true;
+                flagInterruptDisable = false;
                 break;
             case 60: //LDR1
                 registers[instructionData[1]] = Memory.load(registers[instructionData[2]]);
@@ -806,6 +814,7 @@ public class Cpu extends Thread {
             interruptHw = true;
             interruptId = id;
             waitCycles = 4;
+            halted = false;
         }
     }
 

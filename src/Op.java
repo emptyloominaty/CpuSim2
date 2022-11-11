@@ -71,7 +71,7 @@ public class Op {
         codes[56] = new byte[]{2, 2}; //POP2
         codes[57] = new byte[]{2, 2}; //PSH3
         codes[58] = new byte[]{2, 2}; //POP3
-        codes[59] = new byte[]{1, 1}; //
+        codes[59] = new byte[]{1, 1}; //HLT //TODO:!
 
         codes[60] = new byte[]{3, 3}; //LDR1 (Load from Address stored in Register) 8bit
         codes[61] = new byte[]{3, 3}; //STR1 (Store to Address stored in Register) 8bit
@@ -195,7 +195,7 @@ public class Op {
         names.put("POP2", 56);
         names.put("PSH3", 57);
         names.put("POP3", 58);
-        //names.put("", 59);
+        names.put("HLT", 59);
 
         names.put("LDR1", 60);
         names.put("STR1", 61);
@@ -322,7 +322,7 @@ public class Op {
         names2[56] = "POP2"; //POP2
         names2[57] = "PSH3"; //PSH3
         names2[58] = "POP3"; //POP3
-        names2[59] = ""; //
+        names2[59] = "HLT"; //
 
         names2[60] = "LDR1"; //LDR1 (Load from Address stored in Register) 8bit
         names2[61] = "STR1"; //STR1 (Store to Address stored in Register) 8bit
