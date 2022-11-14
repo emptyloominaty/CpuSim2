@@ -1,12 +1,11 @@
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 
-public class Frame implements ActionListener {
+public class Frame implements ActionListener, KeyListener {
     JButton buttonStartCpu;
     JButton buttonLoad;
     JButton buttonLoadMC;
@@ -109,6 +108,16 @@ public class Frame implements ActionListener {
         frame.add(panel2);
         frame.add(panel3);
         frame.add(panelBottom);
+
+        panel1.addKeyListener(this);
+        panel1.setFocusable( true );
+        panel1.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                panel1.requestFocusInWindow();
+                System.out.println("Focus");
+            }
+        });
 
         memText = new JTextArea ( 24, 30 );
         memText.setMargin(new Insets(10,10,10,10));
@@ -286,7 +295,6 @@ public class Frame implements ActionListener {
         labelTexts[9].setText(opCodes.names2[cpu.op]);
         labelTexts[10].setText(String.format("%02X",cpu.op)+" "+String.format("%02X",cpu.instructionData[1])+" "+String.format("%02X",cpu.instructionData[2])+" "+String.format("%02X",cpu.instructionData[3])+" "+String.format("%02X",cpu.instructionData[4])+" "+String.format("%02X",cpu.instructionData[5]));
         screen.updateS();
-        //0xFF0010-0xFF0011
         //Timers
         int timer1Val = Functions.convertTo16Bit(Memory.load(0xFF0010),Memory.load(0xFF0011));
         if (timer1Val!=0) {
@@ -294,7 +302,24 @@ public class Frame implements ActionListener {
         } else {
             timers.cancelTimer1();
         }
-
+        int timer2Val = Functions.convertTo16Bit(Memory.load(0xFF0012),Memory.load(0xFF0013));
+        if (timer2Val!=0) {
+            timers.setTimer2(timer2Val,cpu);
+        } else {
+            timers.cancelTimer2();
+        }
+        int timer3Val = Functions.convertTo16Bit(Memory.load(0xFF0014),Memory.load(0xFF0015));
+        if (timer3Val!=0) {
+            timers.setTimer3(timer3Val,cpu);
+        } else {
+            timers.cancelTimer3();
+        }
+        int timer4Val = Functions.convertTo16Bit(Memory.load(0xFF0016),Memory.load(0xFF0017));
+        if (timer4Val!=0) {
+            timers.setTimer4(timer4Val,cpu);
+        } else {
+            timers.cancelTimer4();
+        }
     }
 
     public String getClock(long clock) {
@@ -361,6 +386,22 @@ public class Frame implements ActionListener {
             }
 
         }
+
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        Memory.store(0xFF0000, (short) e.getKeyCode());
+        cpu.interrupt((byte) 1);
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
 
     }
 }
