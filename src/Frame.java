@@ -22,6 +22,7 @@ public class Frame implements ActionListener, KeyListener {
     Screen screen;
     Timers timers;
     ScreenFrame screenFrame;
+    Device[] devices;
     boolean cpuStarted = false;
     boolean firstStart = true;
 
@@ -36,13 +37,14 @@ public class Frame implements ActionListener, KeyListener {
     JLabel labelSP = new JLabel();
     JLabel labelPC = new JLabel();
 
-    public void main(Cpu cpu,Op opCodes, Screen screen, ScreenFrame screenFrame) {
+    public void main(Cpu cpu,Op opCodes, Screen screen, ScreenFrame screenFrame,Device[] devices) {
         dfs.setGroupingSeparator(' ');
         this.cpu = cpu;
         this.opCodes = opCodes;
         this.screen = screen;
         this.screenFrame = screenFrame;
         this.timers = new Timers();
+        this.devices = devices;
 
         JPanel panel1 =  new JPanel();
         panel1.setBackground(new Color(60, 60, 60));
@@ -322,6 +324,12 @@ public class Frame implements ActionListener, KeyListener {
         }
     }
 
+    public void updateDevices() {
+        for (int i = 0; i<devices.length; i++) {
+            devices[i].interrupt();
+        }
+    }
+
     public String getClock(long clock) {
         if (clock>1000000) {
             return ((double) Math.round((clock/1000000d)*10)/10) +"MHz";
@@ -384,9 +392,7 @@ public class Frame implements ActionListener, KeyListener {
                 buttonCpuDebug.setText("Debug: True");
                 cpu.debug = true;
             }
-
         }
-
     }
 
     @Override

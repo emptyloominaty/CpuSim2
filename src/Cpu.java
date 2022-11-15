@@ -7,6 +7,7 @@ public class Cpu extends Thread {
     long timeB = System.currentTimeMillis();
     long timeC = System.currentTimeMillis();
     long timeD = System.currentTimeMillis();
+    long timeE = System.currentTimeMillis();
     long cyclesDoneB = 0;
     //short[] prevInstruction = new short[6];
 
@@ -62,6 +63,7 @@ public class Cpu extends Thread {
         timeB = System.currentTimeMillis();
         timeC = System.currentTimeMillis();
         timeD = System.currentTimeMillis();
+        timeE = System.currentTimeMillis();
         cyclesDoneA = 0;
         cyclesDoneB = 0;
         timeStart = System.currentTimeMillis();
@@ -153,6 +155,10 @@ public class Cpu extends Thread {
             frame.update(this);
             timeC = System.currentTimeMillis();
             timeEnd = timeC;
+        }
+        if (timeA-timeE>5) {
+            frame.updateDevices();
+            timeE = System.currentTimeMillis();
         }
         cyclesTotal++;
         if (halted) {
@@ -678,7 +684,7 @@ public class Cpu extends Thread {
                 break;
             case 62: //LDR2
                 load =  Functions.convertTo16Bit(Memory.load(registers[instructionData[2]]),
-                        (short) (Memory.load(registers[instructionData[2]])+1));
+                        (Memory.load(registers[instructionData[2]]+1)));
                 registers[instructionData[1]] = load;
                 break;
             case 63: //STR2
@@ -687,9 +693,10 @@ public class Cpu extends Thread {
                 Memory.store(registers[instructionData[2]]+1,store[1]);
                 break;
             case 64: //LDR3
-                load =  Functions.convertTo24Bit(Memory.load(registers[instructionData[2]]),
-                        (short) (Memory.load(registers[instructionData[2]])+1),
-                        (short) (Memory.load(registers[instructionData[2]])+2));
+                load =  Functions.convertTo24Bit(
+                         Memory.load(registers[instructionData[2]]),
+                        (Memory.load(registers[instructionData[2]]+1)),
+                        (Memory.load(registers[instructionData[2]]+2)));
                 registers[instructionData[1]] = load;
                 break;
             case 65: //STR3

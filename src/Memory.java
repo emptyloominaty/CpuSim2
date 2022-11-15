@@ -20,7 +20,7 @@ public class Memory {
     static int ursEnd = 0x9FFFFF;
 
     static int ioStart = 0xFF0000;
-    static int ioEnd = 0xFF17F8;
+    static int ioEnd = 0xFF17FF;
 
     static public void init() {
         data = new short[16777216];
