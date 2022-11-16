@@ -14,6 +14,7 @@ public class Frame implements ActionListener, KeyListener {
     JButton buttonScreen;
     JButton buttonTest;
     JButton buttonTest2;
+    JButton buttonTest3;
     JButton buttonCpuDebug;
     JTextField inputClock;
     JTextArea memText;
@@ -220,6 +221,17 @@ public class Frame implements ActionListener, KeyListener {
         buttonTest2.setBorder(BorderFactory.createStrokeBorder(new BasicStroke(1.5f)));
 
 
+        buttonTest3 = new JButton();
+        buttonTest3.addActionListener(this);
+        buttonTest3.setText("TEST");
+        buttonTest3.setFocusable(false);
+        buttonTest3.setFont(new Font(fontName,Font.PLAIN,fontSize1));
+        buttonTest3.setForeground(new Color(220,220,220));
+        buttonTest3.setBackground(new Color(60,60,60));
+        buttonTest3.setBorder(BorderFactory.createStrokeBorder(new BasicStroke(1.5f)));
+
+
+
         inputClock = new JTextField();
         inputClock.setPreferredSize(new Dimension(200,35));
         inputClock.setFont(new Font(fontName,Font.PLAIN,fontSize1));
@@ -238,8 +250,8 @@ public class Frame implements ActionListener, KeyListener {
         labelTexts[2].setText("Cycles Done: "+cpu.cyclesDone);
         labelTexts[3].setText("Instructions Done: "+cpu.instructionsDone);
         labelTexts[4].setText("IPC: "+ (double) Math.round(((double) cpu.instructionsDone/cpu.cyclesDone)*100)/100);
-        labelTexts[14].setText(""+opCodes.names2[cpu.op]+"");
-        labelTexts[15].setText(cpu.op+"");
+
+        labelTexts[11].setText(cpu.op+"");
 
         panelBottom.add(inputClock);
         panelBottom.add(buttonStartCpu);
@@ -250,6 +262,7 @@ public class Frame implements ActionListener, KeyListener {
         panelBottom.add(buttonScreen);
         panelBottom.add(buttonTest);
         panelBottom.add(buttonTest2);
+        panelBottom.add(buttonTest3);
         panelBottom.add(buttonCpuDebug);
 
         //Panel2
@@ -290,12 +303,19 @@ public class Frame implements ActionListener, KeyListener {
 
 
         if (!cpu.interruptHw) {
-            labelTexts[13].setText("");
+            labelTexts[9].setText("");
         } else {
-            labelTexts[13].setText("INT");
+            labelTexts[9].setText("INT");
         }
-        labelTexts[14].setText(opCodes.names2[cpu.op]);
-        labelTexts[15].setText(String.format("%02X",cpu.op)+" "+String.format("%02X",cpu.instructionData[1])+" "+String.format("%02X",cpu.instructionData[2])+" "+String.format("%02X",cpu.instructionData[3])+" "+String.format("%02X",cpu.instructionData[4])+" "+String.format("%02X",cpu.instructionData[5]));
+        labelTexts[10].setText(opCodes.names2[cpu.op]);
+        labelTexts[11].setText(String.format("%02X",cpu.op)+" "+String.format("%02X",cpu.instructionData[1])+" "+String.format("%02X",cpu.instructionData[2])+" "+String.format("%02X",cpu.instructionData[3])+" "+String.format("%02X",cpu.instructionData[4])+" "+String.format("%02X",cpu.instructionData[5]));
+
+        //labelTexts[14].setText("Devices Clock: 1:"+cpu.devicesBusRatio+" ("+getClock(cpu.clock/cpu.devicesBusRatio)+")");
+        //labelTexts[15].setText("Memory Clock: 1:1 ("+getClock(cpu.clock)+")");
+
+        labelTexts[14].setText("Devices Clock: "+getClock(cpu.clock/cpu.devicesBusRatio)+" (1:"+cpu.devicesBusRatio+")");
+        labelTexts[15].setText("Memory Clock: "+getClock(cpu.clock)+" (1:1)");
+
         screen.updateS();
         //Timers
         int timer1Val = Functions.convertTo16Bit(Memory.load(0xFF0010),Memory.load(0xFF0011));
@@ -384,6 +404,8 @@ public class Frame implements ActionListener, KeyListener {
             cpu.interrupt((byte) 30);
         } else if (e.getSource()==buttonTest2) {
             cpu.interrupt((byte) 31);
+        } else if (e.getSource()==buttonTest3) {
+            cpu.devicesBusRatio++;
         } else if (e.getSource()==buttonCpuDebug) {
             if (cpu.debug) {
                 buttonCpuDebug.setText("Debug: False");

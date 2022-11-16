@@ -1,4 +1,7 @@
 public class Cpu extends Thread {
+    int devicesBusRatio = 96; //TODO:TEST 16
+
+
     boolean debug = false;
     int clock = 0;
     long timeStart = System.currentTimeMillis();
@@ -157,7 +160,7 @@ public class Cpu extends Thread {
             timeEnd = timeC;
         }
         runDevices++;
-        if (runDevices>=100) { // 1/100 (29.43kB/s 1MHz)
+        if (runDevices>=devicesBusRatio) { // 1/100 (29.43kB/s 1MHz)
             frame.updateDevices();
             runDevices = 0;
         }

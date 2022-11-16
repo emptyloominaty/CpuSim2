@@ -8,6 +8,8 @@ public class Device {
     int deviceNumber;
     short[] deviceMemory;
     int deviceMemoryPointer = 0;
+    int[] in16 = new int[16];
+    int[] out16 = new int[16];
 
     public void interrupt() {
         if (type!=0) {
@@ -25,10 +27,17 @@ public class Device {
                 testVal = 0;
                 Memory.store(address+2, (short) 0);
             }
+            if (Memory.load(address+3)>0) {
+                testI = Memory.load(address+3) * 256;
+                testingSpeed16 = true;
+                testVal = 0;
+                Memory.store(address+3, (short) 0);
+            }
             if (testingSpeed) {
                 test();
+            } else if (testingSpeed16) {
+                test16();
             }
-
         }
     }
 
@@ -58,7 +67,16 @@ public class Device {
         Memory.store(address+20,values[0]);
         Memory.store(address+21,values[1]);
         Memory.store(address+22,values[2]);
+        Memory.store(address+0x0C, (short) 0);
         cpu.interrupt((byte) (6+id));
+    }
+
+    public void output16(short[] value) {
+        for (int i = 0; i<16; i++) {
+            Memory.store(address+0x30+i,value[i]);
+        }
+        Memory.store(address+0x0E, (short) 0);
+        cpu.interrupt((byte) (28+id));
     }
 
     int testI = 256;
@@ -70,6 +88,22 @@ public class Device {
         output(testVal);
         if (testI<=0) {
             testingSpeed = false;
+        }
+    }
+    boolean testingSpeed16 = false;
+    public void test16() {
+        if (Memory.load(address+0x0E)==0) {
+            return;
+        }
+        testVal++;
+        short[] testArray = new short[16];
+        for (int i = 0; i<testArray.length; i++) {
+            testArray[i] = (short) (testVal+i);
+        }
+        testI--;
+        output16(testArray);
+        if (testI<=0) {
+            testingSpeed16 = false;
         }
     }
 
@@ -87,7 +121,7 @@ public class Device {
     0x00 Ping (Input) (outputs type to 0x14)
     0x01 Ping (Input) (outputs deviceNumber to 0x14)
     0x02 speedTest (Input) (1024 x val)
-    0x03
+    0x03 speedTest16 (Input) (256 x val)
     0x04
     0x05
     0x06
@@ -96,10 +130,10 @@ public class Device {
     0x09
     0x0A
     0x0B
-    0x0C
-    0x0D
-    0x0E
-    0x0F
+    0x0C cpuReady //TODO:
+    0x0D deviceReady //TODO:
+    0x0E cpuReady16
+    0x0F deviceReady16
 
     0x10-0x13 Input (Interrupt)
     0x14-0x17 Output (Interrupt)
@@ -107,7 +141,10 @@ public class Device {
     0x18-0x1B Input (No Interrupt) (Queue)
     0x1C-0x1F Output (No Interrupt) (Queue)
 
-    0x20 - 0xFF Custom
+    0x20-0x2F 16Byte Input (Interrupt_2)
+    0x30-0x3F 16Byte Output (Interrupt_2)
+
+    0x40-0xFF Custom
     */
 
 
