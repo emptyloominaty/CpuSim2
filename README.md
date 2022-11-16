@@ -21,7 +21,7 @@
 | VRAM          | 0xA00000 | 0xAFFFFF |
 | Keyboard      | 0xFF0000 |    -     |
 | Timers (1-4)  | 0xFF0010 | 0xFF0017 |
-| Devices (1-8) | 0xFF1000 | 0xFF17F8 |
+| Devices (0-7) | 0xFF1000 | 0xFF17F8 |
 
 
 
@@ -87,7 +87,7 @@
 | 56 - POP2  |   2    |   2   |  -  | 0x38  |  reg  |    -    |    -    |    -    |   -   |
 | 57 - PSH3  |   2    |   2   |  -  | 0x39  |  reg  |    -    |    -    |    -    |   -   |
 | 58 - POP3  |   2    |   2   |  -  | 0x3a  |  reg  |    -    |    -    |    -    |   -   |
-| 59 - HLT   |   1    |   1   |  -  | 0x3a  |   -   |    -    |    -    |    -    |   -   |
+| 59 - HLT   |   1    |   1   |  -  | 0x3b  |   -   |    -    |    -    |    -    |   -   |
 | 60 - LDR1  |   3    |   3   |  -  | 0x3c  |  reg  |   reg   |    -    |    -    |   -   |
 | 61 - STR1  |   3    |   3   |  -  | 0x3d  |  reg  |   reg   |    -    |    -    |   -   |
 | 62 - LDR2  |   3    |   3   |  -  | 0x3e  |  reg  |   reg   |    -    |    -    |   -   |
@@ -116,15 +116,19 @@
 |   3   |     Timer2     | 
 |   4   |     Timer3     | 
 |   5   |     Timer4     | 
-|   6   |    Device1     | 
-|   7   |    Device2     | 
-|   8   |    Device3     | 
-|   9   |    Device4     | 
-|  10   |    Device5     | 
-|  11   |    Device6     | 
-|  12   |    Device7     | 
-|  13   |    Device8     | 
-|  14+  |      User      | 
+|   6   |    Device0     | 
+|   7   |    Device1     | 
+|   8   |    Device2     | 
+|   9   |    Device3     | 
+|  10   |    Device4     | 
+|  11   |    Device5     | 
+|  12   |    Device6     | 
+|  13   |    Device7     | 
+| 14-27 |      User      | 
+|  28   |   Device0_2    | 
+|  29   |   Device1_2    | 
+|  30   |   Device2_2    | 
+|  31   |   Device3_2    | 
 
 
 # GPU

@@ -39,6 +39,15 @@ public class MemoryFrame  {
             memText.append("\n");
         }
 
+        //TEST
+
+        /*for (int y = 16715760; y<16716000 ; y+=16) {
+            memText.append(Integer.toHexString(y)+":");
+            for (int x = 0; x<16; x++) {
+                memText.append(" "+String.format("%02X", Memory.data[y+x]));
+            }
+            memText.append("\n");
+        }*/
 
 
     }

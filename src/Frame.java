@@ -226,7 +226,7 @@ public class Frame implements ActionListener, KeyListener {
         inputClock.setForeground(new Color(220,220,220));
         inputClock.setBackground(new Color(60,60,60));
         inputClock.setCaretColor(new Color(220,220,220));
-        inputClock.setText("MAX");
+        inputClock.setText("1000000"); //MAX TODO: TODO: TODO
 
         //Panel1
         panel1.setLayout(new GridLayout(16,1));
@@ -238,8 +238,8 @@ public class Frame implements ActionListener, KeyListener {
         labelTexts[2].setText("Cycles Done: "+cpu.cyclesDone);
         labelTexts[3].setText("Instructions Done: "+cpu.instructionsDone);
         labelTexts[4].setText("IPC: "+ (double) Math.round(((double) cpu.instructionsDone/cpu.cyclesDone)*100)/100);
-        labelTexts[9].setText(""+opCodes.names2[cpu.op]+"");
-        labelTexts[10].setText(cpu.op+"");
+        labelTexts[14].setText(""+opCodes.names2[cpu.op]+"");
+        labelTexts[15].setText(cpu.op+"");
 
         panelBottom.add(inputClock);
         panelBottom.add(buttonStartCpu);
@@ -290,12 +290,12 @@ public class Frame implements ActionListener, KeyListener {
 
 
         if (!cpu.interruptHw) {
-            labelTexts[8].setText("");
+            labelTexts[13].setText("");
         } else {
-            labelTexts[8].setText("INT");
+            labelTexts[13].setText("INT");
         }
-        labelTexts[9].setText(opCodes.names2[cpu.op]);
-        labelTexts[10].setText(String.format("%02X",cpu.op)+" "+String.format("%02X",cpu.instructionData[1])+" "+String.format("%02X",cpu.instructionData[2])+" "+String.format("%02X",cpu.instructionData[3])+" "+String.format("%02X",cpu.instructionData[4])+" "+String.format("%02X",cpu.instructionData[5]));
+        labelTexts[14].setText(opCodes.names2[cpu.op]);
+        labelTexts[15].setText(String.format("%02X",cpu.op)+" "+String.format("%02X",cpu.instructionData[1])+" "+String.format("%02X",cpu.instructionData[2])+" "+String.format("%02X",cpu.instructionData[3])+" "+String.format("%02X",cpu.instructionData[4])+" "+String.format("%02X",cpu.instructionData[5]));
         screen.updateS();
         //Timers
         int timer1Val = Functions.convertTo16Bit(Memory.load(0xFF0010),Memory.load(0xFF0011));

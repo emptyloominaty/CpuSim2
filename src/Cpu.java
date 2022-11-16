@@ -7,7 +7,6 @@ public class Cpu extends Thread {
     long timeB = System.currentTimeMillis();
     long timeC = System.currentTimeMillis();
     long timeD = System.currentTimeMillis();
-    long timeE = System.currentTimeMillis();
     long cyclesDoneB = 0;
     //short[] prevInstruction = new short[6];
 
@@ -63,7 +62,6 @@ public class Cpu extends Thread {
         timeB = System.currentTimeMillis();
         timeC = System.currentTimeMillis();
         timeD = System.currentTimeMillis();
-        timeE = System.currentTimeMillis();
         cyclesDoneA = 0;
         cyclesDoneB = 0;
         timeStart = System.currentTimeMillis();
@@ -72,6 +70,7 @@ public class Cpu extends Thread {
         halted = false;
         cyclesTotal = 0;
         cyclesExecuting = 0;
+        runDevices = 0;
     }
 
     public void sendFrame(Frame frame) {
@@ -131,6 +130,7 @@ public class Cpu extends Thread {
     int waitCycles = 0;
     boolean interruptHw = false;
     int interruptId = 0;
+    int runDevices = 0;
 
 
     public void main() {
@@ -156,9 +156,10 @@ public class Cpu extends Thread {
             timeC = System.currentTimeMillis();
             timeEnd = timeC;
         }
-        if (timeA-timeE>5) {
+        runDevices++;
+        if (runDevices>=100) { // 1/100 (29.43kB/s 1MHz)
             frame.updateDevices();
-            timeE = System.currentTimeMillis();
+            runDevices = 0;
         }
         cyclesTotal++;
         if (halted) {
