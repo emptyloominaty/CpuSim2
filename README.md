@@ -21,7 +21,7 @@
 | VRAM          | 0xA00000 | 0xAFFFFF |
 | Keyboard      | 0xFF0000 |    -     |
 | Timers (1-4)  | 0xFF0010 | 0xFF0017 |
-| Devices (0-7) | 0xFF1000 | 0xFF17F8 |
+| Devices (0-7) | 0xFF1000 | 0xFF17FF |
 
 
 

@@ -204,7 +204,7 @@ public class Frame implements ActionListener, KeyListener {
 
         buttonTest = new JButton();
         buttonTest.addActionListener(this);
-        buttonTest.setText("INT 30");
+        buttonTest.setText("INT 20");
         buttonTest.setFocusable(false);
         buttonTest.setFont(new Font(fontName,Font.PLAIN,fontSize1));
         buttonTest.setForeground(new Color(220,220,220));
@@ -213,7 +213,7 @@ public class Frame implements ActionListener, KeyListener {
 
         buttonTest2 = new JButton();
         buttonTest2.addActionListener(this);
-        buttonTest2.setText("INT 31");
+        buttonTest2.setText("INT 21");
         buttonTest2.setFocusable(false);
         buttonTest2.setFont(new Font(fontName,Font.PLAIN,fontSize1));
         buttonTest2.setForeground(new Color(220,220,220));
@@ -401,11 +401,21 @@ public class Frame implements ActionListener, KeyListener {
         } else if (e.getSource()==buttonScreen) {
             screenFrame.main();
         } else if (e.getSource()==buttonTest) {
-            cpu.interrupt((byte) 30);
+            cpu.interrupt((byte) 20);
         } else if (e.getSource()==buttonTest2) {
-            cpu.interrupt((byte) 31);
+            cpu.interrupt((byte) 21);
         } else if (e.getSource()==buttonTest3) {
-            cpu.devicesBusRatio++;
+            //cpu.devicesBusRatio++;
+            int x = 0;
+            for (int i = 0x3000; i<0x3200 ;i++) {
+                System.out.print(Memory.load(i)+" ");
+                x++;
+                if (x>=64) {
+                    x = 0;
+                    System.out.println("");
+                }
+            }
+
         } else if (e.getSource()==buttonCpuDebug) {
             if (cpu.debug) {
                 buttonCpuDebug.setText("Debug: False");

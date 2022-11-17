@@ -1,5 +1,5 @@
 public class Cpu extends Thread {
-    int devicesBusRatio = 96; //TODO:TEST 16
+    int devicesBusRatio = 200;
 
 
     boolean debug = false;

@@ -8,8 +8,6 @@ public class Device {
     int deviceNumber;
     short[] deviceMemory;
     int deviceMemoryPointer = 0;
-    int[] in16 = new int[16];
-    int[] out16 = new int[16];
 
     public void interrupt() {
         if (type!=0) {
@@ -38,7 +36,11 @@ public class Device {
             } else if (testingSpeed16) {
                 test16();
             }
+            interrupt2();
         }
+    }
+    public void interrupt2() {
+
     }
 
     public void store(short value) {
@@ -138,8 +140,7 @@ public class Device {
     0x10-0x13 Input (Interrupt)
     0x14-0x17 Output (Interrupt)
 
-    0x18-0x1B Input (No Interrupt) (Queue)
-    0x1C-0x1F Output (No Interrupt) (Queue)
+    0x18-0x1F
 
     0x20-0x2F 16Byte Input (Interrupt_2)
     0x30-0x3F 16Byte Output (Interrupt_2)
